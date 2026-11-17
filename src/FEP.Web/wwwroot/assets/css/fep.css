@@ -215,6 +215,9 @@ h1, h2, h3, p { margin: 0; }
   transition: opacity .15s, transform .15s, visibility 0s linear .15s; z-index: 50;
 }
 .nav__sub--right { left: auto; right: 0; }
+/* La última sección (La Federación: 3 columnas) se abre siempre hacia la izquierda: cerrado, el panel
+   sigue ocupando sitio (visibility: hidden) y, alineado a la izquierda, desbordaba la página en horizontal. */
+.nav__item:last-child > .nav__sub--mega { left: auto; right: 0; }
 .nav__item.is-open > .nav__sub {
   opacity: 1; visibility: visible; transform: none;
   transition: opacity .15s, transform .15s, visibility 0s;
@@ -228,7 +231,7 @@ h1, h2, h3, p { margin: 0; }
 .nav__sub-title { font-size: 14px; font-weight: 700; color: var(--text); }
 .nav__sub-count { margin-left: auto; padding-left: 16px; font-size: 11px; color: var(--text-2); white-space: nowrap; }
 .nav__sub-list { display: grid; padding: 0 8px; }
-/* Columnas del desplegable: una por grupo (Competición: 4; La Federación: 2) */
+/* Columnas del desplegable: una por grupo (Competición: 4; La Federación: 3) */
 .nav__sub-cols { display: grid; grid-template-columns: repeat(var(--cols, 1), minmax(190px, 1fr)); }
 .nav__sub--mega .nav__sub-cols { padding: 4px 8px 0; column-gap: 4px; }
 .nav__sub--mega .nav__sub-col + .nav__sub-col { border-left: 1px solid var(--line); }
@@ -365,38 +368,76 @@ h1, h2, h3, p { margin: 0; }
 }
 
 /* =========================================================================
-   Accesos rápidos
+   Accesos rápidos + Gestiones (bx-quick): 5 tarjetas en rejilla bajo el hero
+   Calendario (rojo), Rankings (lima), Documentos, Organización de torneos y
+   Portal de Atención al Federado/a (azul). Componente traído del prototipo 002.
    ========================================================================= */
-.quick { background: var(--gray-bg); }
-.quick__grid { display: grid; grid-template-columns: repeat(4, 1fr); }
-.quick__grid > li { border-right: 1px solid var(--line); }
-.quick__item {
-  display: flex; align-items: flex-start; gap: 16px; height: 112px; padding: 40px 24px 0 24px;
-  transition: background-color .2s;
+.bx-quick {
+  --bxq-lime: #D4F04A; --bxq-lime-ink: #2F3A06; --bxq-soft: #F3F4F6;
+  --bxq-radius: 20px;
+  --bxq-shadow-1: 0 1px 2px rgba(17, 27, 43, .04), 0 8px 24px rgba(17, 27, 43, .06);
+  --bxq-shadow-2: 0 2px 4px rgba(17, 27, 43, .05), 0 18px 48px rgba(17, 27, 43, .12);
+  padding-block: 24px 8px;
 }
-.quick__grid > li:first-child .quick__item { padding-left: 24px; }
-.quick__item:hover { background: #ECEEF1; }
-.quick__item .icon { margin-top: 4px; }
-.quick__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.quick__text strong { font-size: 14px; font-weight: 600; line-height: 20px; }
-.quick__text span { font-size: 11px; color: var(--text-2); line-height: 16px; }
-.quick__item .arrow { margin-left: 18px; margin-top: 2px; }
-.quick__item:hover .arrow { color: var(--red); }
-/* Fila "Gestiones" (Organización de torneos, Portal del Federado/a, Certificados) */
-.quick__tramites {
-  display: grid; grid-template-columns: auto repeat(3, minmax(0, 1fr)); align-items: stretch;
-  border-top: 1px solid var(--line);
+.bx-quick__grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
+.bx-quick__grid > li { display: flex; }
+.bx-tile {
+  position: relative; flex: 1; display: grid; grid-template-rows: auto 1fr; gap: 28px;
+  min-height: 168px; padding: 22px; border-radius: var(--bxq-radius);
+  background: #fff; color: var(--text); border: 1px solid var(--line); box-shadow: var(--bxq-shadow-1);
+  transition: transform .25s var(--ease), box-shadow .25s var(--ease);
 }
-.quick__tramites-label {
-  display: flex; align-items: center; padding: 0 24px 0 24px; border-right: 1px solid var(--line);
-  font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--red);
+.bx-tile:hover, .bx-tile:focus-visible { transform: translateY(-4px); box-shadow: var(--bxq-shadow-2); }
+.bx-tile__icon {
+  width: 44px; height: 44px; padding: 10px; border-radius: 14px; background: var(--bxq-soft);
+  fill: none; stroke: var(--red); stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
 }
-.quick__tramites-list { display: contents; }
-.quick__tramites-list > li { border-right: 1px solid var(--line); }
-.quick__tramites-list > li:last-child { border-right: 0; }
-.quick__item--slim { height: auto; padding: 18px 24px; align-items: center; }
-.quick__item--slim .icon { margin-top: 0; }
-.quick__item--slim .arrow { margin-left: auto; padding-left: 12px; }
+.bx-tile__text { align-self: end; display: grid; gap: 4px; }
+.bx-tile__text strong { font-size: 19px; line-height: 1.15; font-weight: 700; letter-spacing: -.02em; }
+.bx-tile__text span { font-size: 13px; line-height: 1.4; color: var(--text-2); }
+.bx-tile__go {
+  position: absolute; top: 18px; right: 18px; width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: 50%; border: 1px solid var(--line); font-size: 14px;
+  transition: transform .25s var(--ease), background-color .2s, color .2s, border-color .2s;
+}
+.bx-tile:hover .bx-tile__go { transform: rotate(45deg); background: var(--navy); color: #fff; border-color: var(--navy); }
+.bx-tile__kicker {
+  position: absolute; top: 22px; left: 76px; font-size: 10.5px; font-weight: 700; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--text-2); line-height: 44px;
+}
+.bx-tile--red { background: var(--red); border-color: var(--red); color: #fff; }
+.bx-tile--red .bx-tile__icon { background: rgba(255, 255, 255, .16); stroke: #fff; }
+.bx-tile--red .bx-tile__text span { color: rgba(255, 255, 255, .85); }
+.bx-tile--red .bx-tile__go { border-color: rgba(255, 255, 255, .4); }
+.bx-tile--red:hover .bx-tile__go { background: #fff; color: var(--red); border-color: #fff; }
+.bx-tile--lime { background: var(--bxq-lime); border-color: var(--bxq-lime); color: var(--navy); }
+.bx-tile--lime .bx-tile__icon { background: rgba(17, 27, 43, .08); stroke: var(--navy); }
+.bx-tile--lime .bx-tile__text span { color: var(--bxq-lime-ink); }
+.bx-tile--lime .bx-tile__go { border-color: rgba(17, 27, 43, .25); }
+.bx-tile--ink { background: var(--navy); border-color: var(--navy); color: #fff; }
+.bx-tile--ink .bx-tile__icon { background: rgba(255, 255, 255, .1); stroke: var(--bxq-lime); }
+.bx-tile--ink .bx-tile__text span, .bx-tile--ink .bx-tile__kicker { color: rgba(255, 255, 255, .7); }
+.bx-tile--ink .bx-tile__go { border-color: rgba(255, 255, 255, .3); }
+.bx-tile--ink:hover .bx-tile__go { background: var(--bxq-lime); color: var(--navy); border-color: var(--bxq-lime); }
+.bx-tile--red:focus-visible, .bx-tile--ink:focus-visible { outline-color: var(--navy); }
+
+@media (max-width: 1279px) {
+  .bx-quick__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .bx-quick__grid > li:nth-child(4) { grid-column: 1 / span 2; }
+}
+@media (max-width: 640px) {
+  .bx-quick { padding-block: 16px 0; }
+  .bx-quick__grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+  .bx-quick__grid > li:nth-child(n + 3) { grid-column: 1 / -1; }
+  .bx-tile { min-height: 140px; padding: 18px; gap: 18px; }
+  .bx-tile__go { top: 14px; right: 14px; }
+  .bx-tile__kicker { top: 18px; left: 72px; }
+  .bx-tile__text strong { font-size: 17px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bx-tile, .bx-tile__go { transition: none; }
+  .bx-tile:hover, .bx-tile:focus-visible { transform: none; }
+}
 
 /* ---------- Patrocinadores: barras de imagen con enlaces por logo ---------- */
 .patro-bar { position: relative; margin-top: 16px; line-height: 0; }
@@ -687,6 +728,21 @@ img.is-broken { visibility: hidden; }
 .page-hero__stats { display: flex; flex-wrap: wrap; gap: 10px 32px; margin-top: 28px; font-size: 13px; color: var(--on-dark); }
 .page-hero__stats li { display: flex; align-items: baseline; gap: 6px; }
 .page-hero__stats strong { font-size: 24px; font-weight: 700; color: #fff; }
+
+/* Submenú de las pestañas "Calendarios" (FEP por defecto, territoriales, menores y veteranos FFAA) y "Rankings" (absoluto por defecto, equipos, menores, veteranos y silla de ruedas) */
+.subnav { background: #fff; border-bottom: 1px solid var(--line); }
+.subnav__list { display: flex; gap: 8px; margin: 0; padding: 14px 0; list-style: none; overflow-x: auto; scrollbar-width: none; }
+.subnav__list::-webkit-scrollbar { display: none; }
+.subnav__btn {
+  display: inline-flex; align-items: center; height: 38px; padding: 0 16px; white-space: nowrap;
+  border: 1px solid var(--line); border-radius: 999px; background: var(--gray-chip);
+  font-size: 14px; font-weight: 500; color: var(--text-3);
+  transition: background .2s var(--ease), color .2s var(--ease), border-color .2s var(--ease);
+}
+.subnav__btn:hover { border-color: var(--navy); color: var(--navy); background: #fff; }
+.subnav__btn[aria-current="page"] { background: var(--navy); border-color: var(--navy); color: #fff; font-weight: 600; }
+.subnav__btn:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .subnav__btn { transition: none; } }
 
 .page-layout { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 56px; padding-top: 48px; padding-bottom: 72px; }
 .page-toc { position: sticky; top: 120px; align-self: start; }
@@ -1582,17 +1638,11 @@ a.rnk-card:hover .rnk-card__go { background: var(--red); border-color: var(--red
   .nav-panel__extra a { display: block; padding: 10px 0; font-size: 14px; color: var(--text-2); }
 
   .hero__title { font-size: 60px; line-height: 60px; }
-  .quick__grid { grid-template-columns: repeat(2, 1fr); }
-  .quick__grid > li { border-bottom: 1px solid var(--line); }
-  .quick__grid > li:nth-child(2n) { border-right: 0; }
-  .quick__item { height: auto; padding: 24px; }
   .agenda__grid { grid-template-columns: minmax(0, 1fr); }
   /* Una sola columna: ranking y patrocinadores debajo de la agenda, a todo el ancho */
   .home-cols { grid-template-columns: minmax(0, 1fr); gap: 48px; }
   .home-cols__side { position: static; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: start; }
   .news__track { --por-vista: 2; }
-  .quick__tramites-label { padding: 0 16px; }
-  .quick__item--slim { padding: 16px; }
   .ranking { margin-top: 0; }
   .near__grid { grid-template-columns: minmax(0, 1fr); }
   .footer__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 40px; }
@@ -1640,16 +1690,6 @@ a.rnk-card:hover .rnk-card__go { background: var(--red); border-color: var(--red
   .hero__controls { bottom: 32px; }
   .hero__caption { display: none; }
 
-  .quick__grid { grid-template-columns: minmax(0, 1fr); }
-  .quick__grid > li { border-right: 0; }
-  .quick__item { padding: 18px 0; }
-  .quick__grid > li:first-child .quick__item { padding-left: 0; }
-  .quick__item .arrow { margin-left: auto; }
-  .quick__tramites { grid-template-columns: minmax(0, 1fr); }
-  .quick__tramites-label { padding: 16px 0 4px; border-right: 0; }
-  .quick__tramites-list > li { border-right: 0; border-bottom: 1px solid var(--line); }
-  .quick__tramites-list > li:last-child { border-bottom: 0; }
-  .quick__item--slim { padding: 16px 0; }
 
   .section, .agenda, .news, .opps, .near { padding-block: 48px; }
   .h2 { font-size: 28px; }
@@ -2207,3 +2247,25 @@ a.rnk-card:hover .rnk-card__go { background: var(--red); border-color: var(--red
   .cdr-champion__final { color: #333; }
   .cdr-notes { break-inside: avoid; }
 }
+
+/* =========================================================================
+   Botón flotante "Volver arriba" (comun.js · initVolverArriba): encima de la burbuja del asistente
+   ========================================================================= */
+.volver-arriba {
+  position: fixed; right: 32px; bottom: 100px; z-index: 80;
+  display: grid; place-items: center; width: 44px; height: 44px; padding: 0;
+  border: 1px solid var(--line-dark); border-radius: 50%;
+  background: var(--navy); color: #fff; cursor: pointer;
+  box-shadow: 0 6px 18px rgba(17, 27, 43, .25);
+  animation: volver-arriba-in .25s var(--ease);
+  transition: background .2s var(--ease), transform .2s var(--ease);
+}
+.volver-arriba[hidden] { display: none; }
+.volver-arriba:hover { background: var(--navy-2); transform: translateY(-2px); }
+.volver-arriba:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+/* Con el chat del asistente abierto, el botón se oculta para no tapar el panel */
+body:has(.fep-asis.is-abierto) .volver-arriba { display: none; }
+@keyframes volver-arriba-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@media (max-width: 520px) { .volver-arriba { right: 24px; bottom: 88px; } }
+@media (prefers-reduced-motion: reduce) { .volver-arriba { animation: none; transition: none; } .volver-arriba:hover { transform: none; } }
+@media print { .volver-arriba { display: none !important; } }

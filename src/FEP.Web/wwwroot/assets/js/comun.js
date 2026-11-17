@@ -68,6 +68,7 @@ const PAGINAS_MIGRADAS = {
   'previoequipos': 'cuadro.html',
   'calendario_menores_ffaa': 'calendario-menores-ffaa.html', // Calendario_Menores_FFAA(.asp); ?ano/?fed del ASP no se usaban
   'calendario_veteranos_ffaa': 'calendario-veteranos-ffaa.html', // Calendario_Veteranos_FFAA(.asp); ídem
+  'calendarios': 'calendariofep.html',            // Pestaña "Calendarios" del menú: por defecto, el calendario FEP
   'calendariofep': 'calendariofep.html',          // web.config: ^CalendarioFEP → CalendarioFEP.asp (formulario POST: ano)
   'calendarioft': 'calendarioft.html',            // web.config: ^CalendarioFT → CalendarioFT.asp (formulario POST: fed, ano)
   'organizacion_torneos': 'organizacion-torneos.html', // /Organizacion_Torneos(.asp) (menú "Organizar un torneo", banner del calendario); sin parámetros
@@ -331,27 +332,23 @@ const MENU_FEP = [
   {
     clave: 'competicion', texto: 'Competición', enlace: 'CalendarioFEP',
     grupos: [
+      // Una sola pestaña "Calendarios": abre el calendario FEP y, desde su submenú (.subnav), los
+      // territoriales y los de menores y veteranos de las FFAA. `paginas`: también marcan Competición como activa.
       { titulo: 'Calendarios', enlaces: [
-        ['Calendario FEP', 'CalendarioFEP'],
-        ['Fed. territoriales', 'CalendarioFT'],
-        ['Menores FFAA', 'Calendario_Menores_FFAA'],
-        ['Veteranos FFAA', 'Calendario_Veteranos_FFAA'],
-      ] },
+        ['Calendarios', 'Calendarios'],
+      ], paginas: ['calendarioft.html', 'calendario-menores-ffaa.html', 'calendario-veteranos-ffaa.html'] },
+      // Igual con "Rankings": abre el ranking absoluto y, desde su submenú (.subnav), el resto. El índice
+      // (rankings.html) sigue siendo el destino de los enlaces antiguos a /Rankings.
       { titulo: 'Rankings', enlaces: [
-        ['Todos los rankings', 'Rankings'],
-        ['Absoluto', 'Ranking_Absoluto'],
-        ['Equipos absolutos', 'Ranking_Equipos_Absolutos'],
-        ['Menores', 'Ranking_Menores'],
-        ['Veteranos', 'Ranking_Veteranos'],
-        ['Silla de ruedas', 'Ranking_Silla_Ruedas'],
-      ] },
+        ['Rankings', 'Ranking_Absoluto'],
+        // Estadísticas de jugador/a: se llega desde los rankings (enlace de cada jugador), así que vive con ellos.
+        ['Estadísticas de jugador/a', 'Estadisticas'],
+      ], paginas: ['rankings.html', 'ranking-equipos-absolutos.html', 'ranking-menores.html', 'ranking-veteranos.html', 'ranking-silla-ruedas.html'] },
+      // Campeonatos: solo los Campeonatos de España. El resto se reubica: Estadísticas → Rankings,
+      // Retransmisiones → Actualidad, Programa Impulso y Pádel adaptado → La Federación · Programas.
       { titulo: 'Campeonatos', enlaces: [
         ['Campeonatos de España', 'Campeonatos'],
-        ['Programa Impulso', 'Programa_Impulso'],
-        ['Pádel adaptado', 'Padel-Adaptado'],
-        ['Retransmisiones', 'Retransmisiones'],
-        ['Estadísticas', 'Estadisticas'],
-      ] },
+      ], paginas: ['campeonato-silla.html', 'campeonato-equipos.html', 'cuadro.html'] },
       { titulo: 'Para organizadores', enlaces: [
         ['Organizar un torneo', 'Organizacion_Torneos'],
         ['Solicitar arbitraje', 'Solicitud_Arbitraje'],
@@ -361,12 +358,12 @@ const MENU_FEP = [
     ],
   },
   {
-    clave: 'licencias', texto: 'Licencias', enlace: 'Consulta_Tu_Licencia',
+    clave: 'licencias', texto: 'Licencias', enlace: 'Licencias_Buscar',
+    // "Tu licencia / Modificación" y "Solicitar certificados" no están aquí: van dentro de "Mi Portal"
+    // (ACCESOS_PERFIL), donde cada persona federada (jugador/a, árbitro, técnico/a…) entra a su perfil.
     grupos: [
       { enlaces: [
-        ['Tu licencia / Modificación', 'Consulta_Tu_Licencia'],
         ['Buscar licencia', 'Licencias_Buscar'],
-        ['Solicitar certificados', 'Certificados'],
         ['Portal de atención al federado', 'Portal-del-Federado'],
         ['Registro Nacional de Árbitros', 'Registro_Nacional_Arbitros'],
         ['Registro Nacional de Técnicos', 'Registro_Nacional_Tecnicos'],
@@ -393,6 +390,7 @@ const MENU_FEP = [
       { enlaces: [
         ['Noticias', 'Noticias'],
         ['Multimedia', 'Archivos_Multimedia'],
+        ['Retransmisiones', 'Retransmisiones'],
         ['Mujer y pádel', 'Post_Mujer_y_Padel'],
         ['Mujer y pádel · Multimedia', 'mUJERyDeporte'],
       ] },
@@ -417,15 +415,20 @@ const MENU_FEP = [
         ['Dopaje', 'Dopaje'],
         ['Mantenimiento de pistas', 'Mantenimiento_Pistas'],
       ] },
+      // Programas de la FEP (antes en Competición · Campeonatos)
+      { titulo: 'Programas', enlaces: [
+        ['Programa Impulso', 'Programa_Impulso'],
+        ['Pádel adaptado', 'Padel-Adaptado'],
+      ] },
     ],
   },
 ];
 
 /** Accesos directos del panel móvil: las tres tareas más frecuentes. */
 const ACCESOS_MOVIL = [
-  ['Calendario', 'CalendarioFEP'],
-  ['Rankings', 'Rankings'],
-  ['Tu licencia', 'Consulta_Tu_Licencia'],
+  ['Calendarios', 'Calendarios'],
+  ['Rankings', 'Ranking_Absoluto'],
+  ['Campeonatos', 'Campeonatos'], // "Tu licencia" pasa a Mi Portal
 ];
 
 /** Enlaces secundarios que en escritorio están en la barra superior: en móvil, al pie del panel. */
@@ -450,6 +453,7 @@ function pintarMenu() {
     const a = el('a', { class: 'nav__link', ...attrs }, sec.texto);
     const li = el('li', { class: 'nav__item', dataset: { menuKey: sec.clave } }, a);
     const hrefs = sec.grupos.flatMap((g) => g.enlaces.map(([, r, v]) => enlaceMenu(r, v).href));
+    hrefs.push(...sec.grupos.flatMap((g) => g.paginas ?? []));
     if (hrefs.some((h) => h.split(/[?#]/)[0].toLowerCase() === actual)) {
       li.classList.add('is-current');
       a.setAttribute('aria-current', 'true');
@@ -766,6 +770,45 @@ function initComun() {
   cargarLista('/api/v1/redes-sociales').then((r) => pintarRedes(r));
   pintarPatrocinadoresLateral();
   pintarFederaciones();
+  initVolverArriba();
+  cargarAsistente();
+}
+
+/**
+ * Botón flotante "Volver arriba" (flecha ↑) en todas las páginas: aparece al bajar más de una pantalla
+ * y sube al inicio (suave salvo con "reducir movimiento"). Va encima de la burbuja del asistente.
+ */
+function initVolverArriba() {
+  if ($('.volver-arriba')) return;
+  const svg = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">'
+    + '<path d="M12 19V5M5 12l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const btn = el('button', { type: 'button', class: 'volver-arriba', 'aria-label': 'Volver arriba', title: 'Volver arriba', hidden: true });
+  btn.innerHTML = svg;
+  btn.addEventListener('click', () => {
+    window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+    // El foco vuelve al principio de la página (logo) para quien navega con teclado.
+    $('.header__logo')?.focus({ preventScroll: true });
+  });
+  document.body.append(btn);
+
+  let pendiente = false;
+  const actualizar = () => {
+    pendiente = false;
+    const mostrar = window.scrollY > Math.max(400, window.innerHeight * 0.8);
+    if (btn.hidden === mostrar) btn.hidden = !mostrar;
+  };
+  window.addEventListener('scroll', () => {
+    if (!pendiente) { pendiente = true; requestAnimationFrame(actualizar); }
+  }, { passive: true });
+  actualizar();
+}
+
+/** Burbuja del asistente virtual en todas las páginas (assets/js/asistente.js + assets/css/asistente.css). */
+function cargarAsistente() {
+  const comun = document.querySelector('script[src*="assets/js/comun.js"]');
+  const base = comun ? new URL('../', comun.src).href : new URL('assets/', document.baseURI).href;
+  document.head.append(el('link', { rel: 'stylesheet', href: `${base}css/asistente.css` }));
+  document.body.append(el('script', { src: `${base}js/asistente.js`, defer: true }));
 }
 
 window.FEP = Object.freeze({

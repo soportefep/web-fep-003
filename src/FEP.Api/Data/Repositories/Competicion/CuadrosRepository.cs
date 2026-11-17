@@ -327,11 +327,11 @@ public sealed class CuadrosRepository(IDbConnectionFactory connectionFactory) : 
                 var cs = eliminatoria && f.Avance == primeraRonda ? ReglasCuadros.CabezaSerie(f.Cds) : null;
                 if (equipos)
                 {
-                    participantes.Add(new(f.Avance, f.Posicion, "equipo", id, NombreEquipo(id.Value), null, cs, null, lucky));
+                    participantes.Add(new(f.Avance, f.Posicion, "equipo", id, NombreEquipo(id), null, cs, null, lucky));
                 }
                 else
                 {
-                    var nombres = parejas.GetValueOrDefault(id.Value)?.Jugadores ?? Array.Empty<string>();
+                    var nombres = parejas.GetValueOrDefault(id)?.Jugadores ?? Array.Empty<string>();
                     participantes.Add(new(f.Avance, f.Posicion, "pareja", id, string.Join(" - ", nombres), nombres, cs, null, lucky));
                 }
 
@@ -348,9 +348,9 @@ public sealed class CuadrosRepository(IDbConnectionFactory connectionFactory) : 
         var porResultado = new Dictionary<(int, int), string>();
         foreach (var r in resultados)
         {
-            if (Texto.Limpio(r.Resultado) is { } texto)
+            if (Texto.Limpio(r.Resultado) is { } textoResultado)
             {
-                porResultado.TryAdd((r.Avance, r.Posicion), texto);
+                porResultado.TryAdd((r.Avance, r.Posicion), textoResultado);
             }
         }
 

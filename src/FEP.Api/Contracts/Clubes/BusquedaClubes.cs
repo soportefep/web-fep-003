@@ -40,7 +40,7 @@ public sealed record BusquedaClubes(int? Federacion, int? Provincia, IReadOnlyLi
     /// Divide el texto en términos como el ASP (que cambiaba los espacios por "-" y partía por "-"):
     /// el club debe contener todos. Sin términos → lista vacía.
     /// </summary>
-    public static IReadOnlyList<string> Terminos(string? texto)
+    public static IReadOnlyList<string> DividirTerminos(string? texto)
         => string.IsNullOrWhiteSpace(texto)
             ? []
             : texto.Split(Separadores, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
