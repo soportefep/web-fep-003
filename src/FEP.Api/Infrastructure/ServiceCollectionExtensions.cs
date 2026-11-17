@@ -38,7 +38,8 @@ public static class ServiceCollectionExtensions
         var origenes = configuration.GetSection("Cors:OrigenesPermitidos").Get<string[]>() ?? [];
         services.AddCors(opciones => opciones.AddPolicy(CorsPolicies.Front, politica => politica
             .WithOrigins(origenes)
-            .WithMethods("GET", "HEAD")
+            // POST solo lo usa el chat del asistente (POST /api/v1/asistente/chat).
+            .WithMethods("GET", "HEAD", "POST")
             .AllowAnyHeader()));
 
         services.AddOutputCache(opciones => opciones.AddPolicy(CachePolicies.ContenidoPublico, politica => politica

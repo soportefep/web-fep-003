@@ -39,6 +39,37 @@ En servidores se usa la variable de entorno equivalente (doble guion bajo = `:`)
 $env:ConnectionStrings__FEP = "Server=...;Database=FEP;..."
 ```
 
+## Asistente virtual FEPi (chatbot)
+
+FEPi es una burbuja de chat (abajo a la derecha) en todas las páginas: responde sobre reglamentos, circulares, estatutos y
+rankings. La carga `comun.js` (`assets/js/asistente.js` + `assets/css/asistente.css`) y habla con
+`POST /api/v1/asistente/chat`, que usa Claude (API de Anthropic) con cuatro herramientas: búsqueda en los documentos,
+catálogo de documentos, clasificación de un ranking y estadísticas de un jugador (las dos últimas, con los mismos
+repositorios de solo lectura que los endpoints públicos).
+
+**Clave de la API de Anthropic** (nunca en `appsettings*.json`):
+
+```powershell
+cd src/FEP.Api
+dotnet user-secrets set "Asistente:ApiKey" "<clave>"
+```
+
+En servidores, la variable de entorno `Asistente__ApiKey`. Sin clave, el chat se muestra igual pero responde que no
+está disponible y ofrece el formulario de contacto. Los demás ajustes (`Asistente:Modelo`, `Esfuerzo`,
+`PreguntasPorMinuto`, `PreguntasPorHora`, `TokensDiarios`, `UrlContacto`) tienen valores por defecto en
+`Infrastructure/Asistente/AsistenteOptions.cs`.
+
+**Documentos**: los PDF de `docs/info_fep/` se convierten en `src/FEP.Api/Contenidos/asistente/` (catálogo + fragmentos
+de texto). Al añadir, cambiar o retirar un PDF:
+
+```powershell
+powershell -NoProfile -File tools\generar-corpus-asistente.ps1   # requiere pdftotext (viene con Git for Windows)
+```
+
+y reinicia la API. En `documentos.json` se pueden editar a mano `titulo`, `descripcion`, `anio`, `vigente` y `url`
+(enlace público al PDF, para que el chat lo enlace como fuente); el script los conserva. Los PDF escaneados sin texto
+quedan marcados con `"sinTexto": true` y no se consultan hasta pasarlos por OCR.
+
 ## Ejecutar
 
 En dos terminales:

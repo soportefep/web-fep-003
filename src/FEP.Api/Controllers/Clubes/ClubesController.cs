@@ -50,7 +50,7 @@ public sealed class ClubesController(IClubesRepository repositorio, TimeProvider
                 $"Debe estar entre {BusquedaClubes.ProvinciaMinima} y {BusquedaClubes.ProvinciaMaxima} (omítelo para no filtrar).");
         }
 
-        var terminos = BusquedaClubes.Terminos(busqueda);
+        var terminos = BusquedaClubes.DividirTerminos(busqueda);
         if (busqueda?.Length > BusquedaClubes.LongitudMaximaBusqueda)
         {
             ModelState.AddModelError(nameof(busqueda), $"Máximo {BusquedaClubes.LongitudMaximaBusqueda} caracteres.");

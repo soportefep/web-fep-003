@@ -766,6 +766,15 @@ function initComun() {
   cargarLista('/api/v1/redes-sociales').then((r) => pintarRedes(r));
   pintarPatrocinadoresLateral();
   pintarFederaciones();
+  cargarAsistente();
+}
+
+/** Burbuja del asistente virtual en todas las páginas (assets/js/asistente.js + assets/css/asistente.css). */
+function cargarAsistente() {
+  const comun = document.querySelector('script[src*="assets/js/comun.js"]');
+  const base = comun ? new URL('../', comun.src).href : new URL('assets/', document.baseURI).href;
+  document.head.append(el('link', { rel: 'stylesheet', href: `${base}css/asistente.css` }));
+  document.body.append(el('script', { src: `${base}js/asistente.js`, defer: true }));
 }
 
 window.FEP = Object.freeze({

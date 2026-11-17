@@ -10,6 +10,7 @@ using FEP.Api.Data.Repositories.Navegacion;
 using FEP.Api.Data.Repositories.Noticias;
 using FEP.Api.Data.Repositories.Patrocinadores;
 using FEP.Api.Infrastructure;
+using FEP.Api.Infrastructure.Asistente;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -134,6 +135,11 @@ builder.Services.AddScoped<IEstadisticasJugadorRepository, EstadisticasJugadorRe
 // SFEP_Torneos_Liguilla, SFEP_Fichas). Las variantes *Excell.asp (exportación a Excel) no se migran.
 builder.Services.AddScoped<ICuadrosRepository, CuadrosRepository>();
 
+// Asistente virtual (burbuja de chat): corpus de normativa (Contenidos/asistente, generado con
+// tools/generar-corpus-asistente.ps1), herramientas sobre los repositorios de rankings y estadísticas, cliente de Claude,
+// presupuesto diario y límite de preguntas por IP. Clave en user-secrets: "Asistente:ApiKey".
+builder.Services.AddFepAsistente(builder.Configuration);
+
 var app = builder.Build();
 
 // --- Canalización HTTP -----------------------------------------------------
@@ -148,6 +154,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors(CorsPolicies.Front);
+app.UseRateLimiter();
 app.UseOutputCache();
 
 if (app.Environment.IsDevelopment())
