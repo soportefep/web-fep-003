@@ -64,7 +64,7 @@
           <!-- Menú principal (5 secciones). comun.js (MENU_FEP) pinta los desplegables y accesos móviles -->
           <ul class="nav" id="nav-principal">
             <li class="nav__item" data-menu-key="competicion"><a class="nav__link" href="calendariofep.html">Competición</a></li>
-            <li class="nav__item" data-menu-key="licencias"><a class="nav__link" href="https://www.padelfederacion.es/Consulta_Tu_Licencia">Licencias</a></li>
+            <li class="nav__item" data-menu-key="licencias"><a class="nav__link" href="https://www.padelfederacion.es/Licencias_Buscar">Licencias</a></li>
             <li class="nav__item" data-menu-key="formacion"><a class="nav__link" href="https://www.padelfederacion.es/Formacion_Calendario">Formación</a></li>
             <li class="nav__item" data-menu-key="actualidad"><a class="nav__link" href="https://www.padelfederacion.es/Noticias">Actualidad</a></li>
             <li class="nav__item" data-menu-key="federacion"><a class="nav__link" href="organos-de-gobierno.html">La Federación</a></li>
@@ -146,65 +146,48 @@
       </div>
     </section>
 
-    <!-- ============ ACCESOS RÁPIDOS ============ -->
-    <nav class="quick" aria-label="Accesos rápidos">
-      <ul class="container quick__grid">
+    <!-- ============ ACCESOS RÁPIDOS + GESTIONES (bx-quick) ============
+         Gestiones: destacados de la barra lateral de la web actual ("Tu licencia" y "Solicitar certificados" van en Mi Portal) -->
+    <nav class="bx-quick container" aria-label="Accesos rápidos y gestiones">
+      <ul class="bx-quick__grid">
         <li>
-          <a class="quick__item" href="calendariofep.html">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h1M11.5 14h1M15.5 14h1M7.5 17.5h1M11.5 17.5h1"/></svg>
-            <span class="quick__text"><strong>Calendario</strong><span>Encuentra tu próxima cita</span></span>
-            <span class="arrow" aria-hidden="true">↗</span>
+          <a class="bx-tile bx-tile--red" href="calendariofep.html">
+            <svg class="bx-tile__icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4M7.5 14h1M11.5 14h1M15.5 14h1M7.5 17.5h1M11.5 17.5h1"/></svg>
+            <span class="bx-tile__text"><strong>Calendario</strong><span>Encuentra tu próxima cita</span></span>
+            <span class="bx-tile__go" aria-hidden="true">↗</span>
           </a>
         </li>
         <li>
-          <a class="quick__item" href="rankings.html">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20v-4M8 20v-7M12 20v-5M16 20v-9M20 20V8M3 11l5-5 4 3 7-6M15 3h4v4"/></svg>
-            <span class="quick__text"><strong>Rankings</strong><span>Consulta la clasificación</span></span>
-            <span class="arrow" aria-hidden="true">↗</span>
+          <a class="bx-tile bx-tile--lime" href="rankings.html">
+            <svg class="bx-tile__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20v-4M8 20v-7M12 20v-5M16 20v-9M20 20V8M3 11l5-5 4 3 7-6M15 3h4v4"/></svg>
+            <span class="bx-tile__text"><strong>Rankings</strong><span>Consulta la clasificación</span></span>
+            <span class="bx-tile__go" aria-hidden="true">↗</span>
           </a>
         </li>
         <li>
-          <a class="quick__item" href="https://www.padelfederacion.es/Licencias_TuLicencia.asp">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="16" height="17" rx="2"/><path d="M9 2.5h6v3H9z"/><circle cx="12" cy="11.5" r="2.5"/><path d="M7.5 18c.8-2 2.5-3 4.5-3s3.7 1 4.5 3"/></svg>
-            <span class="quick__text"><strong>Tu licencia</strong><span>Todo listo para competir</span></span>
-            <span class="arrow" aria-hidden="true">↗</span>
+          <a class="bx-tile" href="https://www.padelfederacion.es/Documentos_Circulares.asp">
+            <svg class="bx-tile__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V4a1 1 0 0 1 1-1h6l5 5v10a1 1 0 0 1-1 1h-3"/><path d="M15 3v5h5"/><path d="M4 8a1 1 0 0 1 1-1h6l4 4v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg>
+            <span class="bx-tile__text"><strong>Documentos</strong><span>Normativa y circulares</span></span>
+            <span class="bx-tile__go" aria-hidden="true">↗</span>
           </a>
         </li>
         <li>
-          <a class="quick__item" href="https://www.padelfederacion.es/Documentos_Circulares.asp">
-            <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V4a1 1 0 0 1 1-1h6l5 5v10a1 1 0 0 1-1 1h-3"/><path d="M15 3v5h5"/><path d="M4 8a1 1 0 0 1 1-1h6l4 4v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z"/></svg>
-            <span class="quick__text"><strong>Documentos</strong><span>Normativa y circulares</span></span>
-            <span class="arrow" aria-hidden="true">↗</span>
+          <a class="bx-tile" href="organizacion-torneos.html">
+            <span class="bx-tile__kicker">Gestiones</span>
+            <svg class="bx-tile__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6v4H9z"/></svg>
+            <span class="bx-tile__text"><strong>Organización de torneos</strong><span>Solicita organizar un torneo FEP</span></span>
+            <span class="bx-tile__go" aria-hidden="true">↗</span>
+          </a>
+        </li>
+        <li>
+          <a class="bx-tile bx-tile--ink" href="https://www.padelfederacion.es/Portal-del-Federado">
+            <span class="bx-tile__kicker">Gestiones</span>
+            <svg class="bx-tile__icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.9-3.4 3.6-5.5 7-5.5s6.1 2.1 7 5.5"/><path d="M18.5 4.5l1.5 1.5 2.5-2.5"/></svg>
+            <span class="bx-tile__text"><strong>Portal de Atención al Federado/a</strong><span>Consultas y gestiones de tu licencia</span></span>
+            <span class="bx-tile__go" aria-hidden="true">↗</span>
           </a>
         </li>
       </ul>
-      <!-- Gestiones: los 3 primeros destacados de la barra lateral de la web actual -->
-      <div class="container quick__tramites">
-        <p class="quick__tramites-label">Gestiones</p>
-        <ul class="quick__tramites-list">
-          <li>
-            <a class="quick__item quick__item--slim" href="organizacion-torneos.html">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3 4M16 6h3a3 3 0 0 1-3 4M12 13v4M8 21h8M9 17h6v4H9z"/></svg>
-              <span class="quick__text"><strong>Organización de torneos</strong><span>Solicita organizar un torneo FEP</span></span>
-              <span class="arrow" aria-hidden="true">↗</span>
-            </a>
-          </li>
-          <li>
-            <a class="quick__item quick__item--slim" href="https://www.padelfederacion.es/Portal-del-Federado">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.9-3.4 3.6-5.5 7-5.5s6.1 2.1 7 5.5"/><path d="M18.5 4.5l1.5 1.5 2.5-2.5"/></svg>
-              <span class="quick__text"><strong>Portal de Atención al Federado/a</strong><span>Consultas y gestiones de tu licencia</span></span>
-              <span class="arrow" aria-hidden="true">↗</span>
-            </a>
-          </li>
-          <li>
-            <a class="quick__item quick__item--slim" href="https://www.padelfederacion.es/Certificados">
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v8"/><path d="M14 3v5h5"/><path d="M6 3v18h7"/><path d="M9 11h6M9 14h4"/><circle cx="17.5" cy="17.5" r="2.5"/><path d="M16 19.8V23l1.5-1 1.5 1v-3.2"/></svg>
-              <span class="quick__text"><strong>Solicitar certificados</strong><span>Certificados federativos online</span></span>
-              <span class="arrow" aria-hidden="true">↗</span>
-            </a>
-          </li>
-        </ul>
-      </div>
     </nav>
 
     <!-- ============ NOTICIAS + AGENDA (izquierda) · RANKING + PATROCINADORES (derecha) ============
@@ -414,7 +397,7 @@
             <li><a href="https://www.padelfederacion.es/Licencias_Intro.asp">Licencias</a></li>
             <li><a href="https://www.padelfederacion.es/Formacion_Calendario.asp">Formación</a></li>
             <li><a href="https://www.padelfederacion.es/Documentos_Normativas.asp">Documentación</a></li>
-            <li><a href="https://www.padelfederacion.es/Licencias_TuLicencia.asp">Portal del federado</a></li>
+            <li><a href="https://www.padelfederacion.es/Portal-del-Federado">Portal del federado</a></li>
           </ul>
         </nav>
         <nav class="footer__col" aria-labelledby="pie-ayuda">
