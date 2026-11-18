@@ -3,6 +3,7 @@ using FEP.Api.Data.Repositories.Clubes;
 using FEP.Api.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using Microsoft.Extensions.Options;
 
 namespace FEP.Api.Controllers.Clubes;
 
@@ -85,6 +86,47 @@ public sealed class ClubesController(IClubesRepository repositorio, TimeProvider
         // Año en curso según la hora local del servidor, como year(now()) en el ASP.
         var anio = reloj.GetLocalNow().Year;
         return Ok(await repositorio.BuscarAsync(criterios, anio, cancellationToken));
+    }
+
+    /// <summary>
+    /// Ficha del club (sustituye a <c>Club.asp?id=</c>): contacto, licencias de jugador/a del año en curso
+    /// (autonómicas y de competición nacional) y torneos realizados. Solo lectura.
+    /// </summary>
+    /// <param name="id"><c>IdClub</c>: solo dígitos, con sus ceros a la izquierda (p. ej. <c>0118003</c>).</param>
+    /// <param name="fichas">Repositorio de fichas de club.</param>
+    /// <param name="media">Opciones de medios (raíz de la web actual para <c>urlWebActual</c>).</param>
+    /// <param name="cancellationToken">Cancelación de la petición.</param>
+    /// <response code="400">El id no son solo dígitos (máx. 10).</response>
+    /// <response code="404">No existe el club (<c>motivo</c> = <c>club-no-encontrado</c>). Incluye <c>urlWebActual</c>.</response>
+    [HttpGet("{id}")]
+    [ProducesResponseType(typeof(ClubDetalleDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public async Task<ActionResult<ClubDetalleDto>> GetFicha(
+        [FromRoute] string id,
+        [FromServices] IFichaClubRepository fichas,
+        [FromServices] IOptions<MediaOptions> media,
+        CancellationToken cancellationToken)
+    {
+        if (!ReglasFichaClub.IdValido(id))
+        {
+            ModelState.AddModelError(nameof(id), $"Debe ser un código de club numérico (máx. {ReglasFichaClub.LongitudMaximaId} cifras).");
+            return ValidationProblem(ModelState);
+        }
+
+        // Año en curso según la hora local del servidor, como year(now()) en el ASP (igual que el buscador).
+        var ficha = await fichas.ObtenerAsync(id, reloj.GetLocalNow().Year, cancellationToken);
+        if (ficha is not null)
+        {
+            return Ok(ficha);
+        }
+
+        var problema = ProblemDetailsFactory.CreateProblemDetails(HttpContext, StatusCodes.Status404NotFound,
+            "Club no encontrado", detail: $"No existe ningún club con el código {id}.");
+        problema.Extensions["motivo"] = "club-no-encontrado";
+        problema.Extensions["urlWebActual"] = WebActual.Url(media.Value, ReglasFichaClub.RutaWebActual(id));
+        return NotFound(problema);
     }
 
     /// <summary>Federaciones (con las provincias de su comunidad) y provincias para los desplegables.</summary>

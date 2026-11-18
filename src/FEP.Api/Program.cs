@@ -51,6 +51,7 @@ builder.Services.AddScoped<IFichaFederacionRepository, FichaFederacionRepository
 
 // Clubes.asp: buscador de clubes federados (Dapper; SFEP_Clubes, SFEP_Clubes_Licencia, SFEP_Federaciones, SFEP_Provincias).
 builder.Services.AddScoped<IClubesRepository, ClubesRepository>();
+builder.Services.AddScoped<IFichaClubRepository, FichaClubRepository>();
 
 // Microsite.asp (+ BarraLateralMicrosite.inc): mini-CMS de micrositios (Dapper; SFEP_Microsites,
 // SFEP_Microsites_Menus, SFEP_Microsites_Posts, SFEP_Microsites_Archivos).
