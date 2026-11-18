@@ -360,20 +360,50 @@ function tarjetaFinal(p, m) {
    =========================================================================== */
 function pintarCuadro(m) {
   const cont = $('#cdr-bracket');
-  const cols = m.rondas.map((r) => el('section', { class: 'cdr-col', 'aria-label': r.nombre },
-    el('h3', { class: 'cdr-col__head' }, el('span', { text: r.nombre }),
-      el('span', { class: 'cdr-col__count', text: plural(r.encuentros.filter((e) => !e.exento).length, 'partido', 'partidos') })),
-    el('div', { class: 'cdr-col__body' }, r.encuentros.map((e) => el('div', { class: 'cdr-slot' }, tarjeta(e, m, r))))));
+  const cols = m.rondas.map((r) => {
+    // Progreso de la ronda: partidos con resultado o ya decididos (gana uno) sobre los que se juegan (sin exentos).
+    const jugables = r.encuentros.filter((e) => !e.exento);
+    const jugados = jugables.filter((e) => e.resultado || e.ganador).length;
+    const barra = el('span', { class: 'cdr-col__bar', 'aria-hidden': 'true' });
+    barra.style.setProperty('--p', `${jugables.length ? Math.round((jugados / jugables.length) * 100) : 0}%`);
+    return el('section', { class: 'cdr-col', 'aria-label': r.nombre },
+      el('h3', { class: 'cdr-col__head' }, el('span', { text: r.nombre }),
+        el('span', { class: 'cdr-col__count', text: jugables.length && jugados < jugables.length
+          ? `${fmtNum.format(jugados)}/${plural(jugables.length, 'partido', 'partidos')}`
+          : plural(jugables.length, 'partido', 'partidos') }),
+        barra),
+      el('div', { class: 'cdr-col__body' }, r.encuentros.map((e) => el('div', {
+        class: `cdr-slot${e.ganador ? ' is-decided' : ''}`,
+      }, tarjeta(e, m, r)))));
+  });
   if (m.final) {
     const titulo = m.final.avance === 0 ? (m.esEquipos ? 'Campeón' : 'Campeones') : 'Clasificados';
     cols.push(el('section', { class: 'cdr-col cdr-col--final', 'aria-label': titulo },
       el('h3', { class: 'cdr-col__head' }, el('span', { text: titulo })),
       el('div', { class: 'cdr-col__body' }, m.final.entradas.map((p) => el('div', { class: 'cdr-slot' }, tarjetaFinal(p, m))))));
   }
+  cols.forEach((c, i) => c.style.setProperty('--i', String(i)));
   cont.replaceChildren(...cols);
   cont.style.setProperty('--cdr-cols', String(cols.length));
   cont.classList.toggle('cdr-bracket--teams', m.esEquipos);
+  // Ruta del campeón dibujada sobre los conectores (dorado).
+  if (m.campeon) marcarRuta(cont, clave(m.campeon.nombre), 'is-champ');
   actualizarFlechas();
+}
+
+/**
+ * Marca en los conectores el recorrido de un participante: `{pre}-in` en cada hueco donde aparece (línea que entra
+ * desde la ronda anterior) y `{pre}-out` donde gana (línea que sale hacia la siguiente).
+ */
+function marcarRuta(b, k, pre) {
+  for (const s of b.querySelectorAll(`.${pre}-in, .${pre}-out`)) s.classList.remove(`${pre}-in`, `${pre}-out`);
+  if (!k) return;
+  for (const f of b.querySelectorAll(`[data-k="${CSS.escape(k)}"]`)) {
+    const slot = f.closest('.cdr-slot');
+    if (!slot) continue;
+    slot.classList.add(`${pre}-in`);
+    if (f.classList.contains('is-winner')) slot.classList.add(`${pre}-out`);
+  }
 }
 
 const plural = (n, uno, varios) => `${fmtNum.format(n)} ${n === 1 ? uno : varios}`;
@@ -590,6 +620,7 @@ function initResaltado() {
   const marcar = (k) => {
     for (const f of b.querySelectorAll('.is-path')) f.classList.remove('is-path');
     b.classList.toggle('is-tracing', Boolean(k));
+    marcarRuta(b, k, 'is-trace');
     if (!k) return;
     for (const f of b.querySelectorAll(`[data-k="${CSS.escape(k)}"]`)) f.classList.add('is-path');
   };
@@ -718,7 +749,7 @@ function pintarExtras(d) {
   $('#cdr-cabezas-lista').replaceChildren(...cs.map((c) => el('li', { class: 'cdr-seeds__item', dataset: { k: clave(limpio(c.nombre).replace(/\s*\/\s*/g, ' - ')) } },
     el('span', { class: 'cdr-seed', text: String(c.cabezaSerie ?? '') }),
     el('span', { class: 'cdr-seeds__name', text: limpio(c.nombre).replace(/\s*\/\s*/g, ' / ') }),
-    Number.isFinite(Number(c.puntos)) ? el('span', { class: 'cdr-seeds__pts', text: `${fmtNum.format(Number(c.puntos))} pts` }) : null)));
+    c.puntos != null && c.puntos !== '' && Number.isFinite(Number(c.puntos)) ? el('span', { class: 'cdr-seeds__pts', text: `${fmtNum.format(Number(c.puntos))} pts` }) : null)));
 }
 
 /* ===========================================================================

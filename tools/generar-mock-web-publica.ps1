@@ -1,4 +1,4 @@
-# Genera mocks de torneos por parejas a partir de la WEB PÚBLICA actual de la FEP (no de la BD):
+﻿# Genera mocks de torneos por parejas a partir de la WEB PÚBLICA actual de la FEP (no de la BD):
 #   - mock/competicion-campeonatos-parejas-{id}.json   (ficha: GET /api/v1/competicion/campeonatos-parejas/{id})
 #   - mock/competicion-cuadros-{id}.json               (índice de cuadros)
 #   - mock/competicion-cuadros-{id}-{G}-{Cat}-{Nivel}-{Cuadro}.json (cada cuadro de eliminatoria)
@@ -67,7 +67,7 @@ function LeerCuadro([string]$html) {
   $r = 0
   foreach ($tr in [regex]::Matches($tabla.Groups[1].Value, '(?is)<tr[^>]*>(.*?)</tr>')) {
     $c = 0
-    foreach ($td in [regex]::Matches($tr.Groups[1].Value, '(?is)<td([^>]*)>(.*?)</td>')) {
+    foreach ($td in [regex]::Matches($tr.Groups[1].Value, '(?is)<t[dh]([^>]*)>(.*?)</t[dh]>')) {
       while ($ocupado.ContainsKey("$r,$c")) { $c++ }
       $attrs = $td.Groups[1].Value
       $rs = 1; $cs = 1
@@ -112,15 +112,22 @@ function LeerCuadro([string]$html) {
       if ($primera -and $semillas.ContainsKey($huecos[$p].Fila)) { $o.cabezaSerie = $semillas[$huecos[$p].Fila] }
       [void]$participantes.Add($o)
     }
-    foreach ($res in $celdas | Where-Object { $_.Col -eq $col -and $_.Html -match 'class="resultado"' }) {
+    # Resultado y horario (div.resultado / div.horario) de cada partido: la celda queda entre sus dos huecos.
+    $porPartido = [ordered]@{}
+    foreach ($res in $celdas | Where-Object { $_.Col -eq $col -and $_.Html -match 'class="(resultado|horario)"' }) {
       $texto = Texto ([regex]::Match($res.Html, '(?is)<div[^>]*class="resultado"[^>]*>(.*?)</div>').Groups[1].Value)
-      if (-not $texto) { continue }
+      $hora = Texto ([regex]::Match($res.Html, '(?is)<div[^>]*class="horario"[^>]*>(.*?)</div>').Groups[1].Value)
+      if (-not $texto -and -not $hora) { continue }
       for ($m = 0; $m -lt [Math]::Floor($n / 2); $m++) {
         if ($huecos[2 * $m].Fila -lt $res.Fila -and $res.Fila -le $huecos[2 * $m + 1].Fila) {
-          [void]$partidos.Add([ordered]@{ avance = $avance; posicion = $m + 1; resultado = $texto; horario = $null; enfrentamiento = $false }); break
+          if (-not $porPartido.Contains("$m")) { $porPartido["$m"] = [ordered]@{ avance = $avance; posicion = $m + 1; resultado = $null; horario = $null; enfrentamiento = $false } }
+          if ($texto) { $porPartido["$m"].resultado = $texto }
+          if ($hora) { $porPartido["$m"].horario = [ordered]@{ dia = $null; lugar = $null; obs = $hora } }
+          break
         }
       }
     }
+    foreach ($x in $porPartido.Values) { [void]$partidos.Add($x) }
     $primera = $false
   }
   $obs = [regex]::Match($html, '(?is)<div class="cuadroTextoObs">(.*?)</div>').Groups[1].Value

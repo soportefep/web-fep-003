@@ -2103,6 +2103,46 @@ a.rnk-card:hover .rnk-card__go { background: var(--red); border-color: var(--red
 .cdr-winner.is-empty .cdr-winner__icon { background: var(--gray-chip); color: var(--text-2); }
 .cdr-match--qualified .cdr-team { min-height: 46px; }
 
+/* ---------- Gráfico moderno: lienzo, cabeceras con progreso y rutas sobre los conectores ---------- */
+.cdr-bracket {
+  background:
+    radial-gradient(circle at 1px 1px, rgba(17, 27, 43, .08) 1px, transparent 0) 0 0 / 18px 18px,
+    linear-gradient(180deg, #F7F8FA 0%, var(--gray-bg) 100%);
+  border: 1px solid var(--line);
+}
+.cdr-col__head {
+  position: relative; align-items: center; padding: 9px 12px 13px; border: 1px solid var(--line); border-radius: 10px;
+  background: #fff; box-shadow: 0 1px 2px rgba(17, 27, 43, .05);
+}
+.cdr-col__bar { position: absolute; left: 12px; right: 12px; bottom: 6px; height: 3px; overflow: hidden; border-radius: 3px; background: var(--gray-chip); }
+.cdr-col__bar::after { content: ""; display: block; width: var(--p, 0%); height: 100%; border-radius: inherit; background: var(--red); transition: width .6s ease; }
+.cdr-col--final .cdr-col__head { padding-bottom: 9px; border-color: var(--navy); background: var(--navy); color: #fff; }
+.cdr-match { border-radius: 12px; }
+.cdr-match.is-done { box-shadow: 0 1px 2px rgba(17, 27, 43, .06), 0 4px 14px rgba(17, 27, 43, .05); }
+.cdr-winner:not(.is-empty) { box-shadow: 0 0 0 2px var(--cdr-gold), 0 10px 28px rgba(17, 27, 43, .28); }
+
+/* Conectores: grises si el partido está por jugar, más oscuros si ya hay ganador; la ruta del campeón en dorado y
+   la del participante señalado (ratón o foco) en rojo, por encima. */
+.cdr-col:not(.cdr-col--final) .cdr-slot.is-decided::after { border-color: #97A3B6; }
+.cdr-slot::before, .cdr-slot::after { transition: border-color .2s; }
+.cdr-col:not(.cdr-col--final) .cdr-slot.is-champ-out::after,
+.cdr-col + .cdr-col .cdr-slot.is-champ-in::before { border-color: var(--cdr-gold); }
+.cdr-bracket.is-tracing .cdr-col:not(.cdr-col--final) .cdr-slot.is-trace-out::after,
+.cdr-bracket.is-tracing .cdr-col + .cdr-col .cdr-slot.is-trace-in::before { border-color: var(--red); }
+.cdr-bracket.is-tracing .cdr-slot.is-trace-in .cdr-match { border-color: var(--red); box-shadow: 0 6px 18px rgba(200, 16, 46, .14); }
+
+/* Entrada escalonada de las rondas */
+@keyframes cdr-entra { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+.cdr-bracket .cdr-col { animation: cdr-entra .45s ease both; animation-delay: calc(var(--i, 0) * 70ms); }
+@media (prefers-reduced-motion: reduce) {
+  .cdr-bracket .cdr-col { animation: none; }
+  .cdr-col__bar::after { transition: none; }
+}
+@media print {
+  .cdr-bracket { background: none; border: 0; }
+  .cdr-bracket .cdr-col { animation: none; }
+}
+
 /* Recorrido al pasar el ratón y búsqueda */
 .cdr-bracket.is-tracing .cdr-match:not(:has(.is-path)) { opacity: .45; }
 .cdr-bracket.is-tracing .cdr-team.is-path { background: #FFF6E5; }

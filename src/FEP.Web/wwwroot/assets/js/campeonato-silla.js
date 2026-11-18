@@ -34,6 +34,29 @@ const CATEGORIAS = { absoluto: 'Absoluto', menores: 'Menores', veteranos: 'Veter
 const TIPOS_CUADRO = { final: 'Cuadro', consolacion: 'Consolación', liguilla: 'Liguilla', grupo: 'Grupo', previa: 'Previa' };
 const PREFIJO_LICENCIA = 'PS';
 
+/**
+ * La misma ficha sirve para los torneos por parejas (Camp_Parejas.asp / Camp_Parejas_Veteranos.asp →
+ * campeonato-parejas.html, <body data-modalidad="parejas">): Camp_Parejas.asp y Camp_Silla.asp leen las mismas
+ * tablas. Cambian el endpoint, algunos textos y el enlace a la web actual.
+ */
+const MODALIDADES = {
+  silla: {
+    api: 'campeonatos-silla', paginaWeb: 'Camp_Silla.asp', eyebrow: 'Pádel en silla de ruedas',
+    etiqueta: 'Silla de ruedas', log: 'torneo de silla de ruedas',
+  },
+  parejas: {
+    api: 'campeonatos-parejas', paginaWeb: 'Camp_Parejas.asp', eyebrow: 'Campeonato por parejas',
+    etiqueta: null, log: 'torneo por parejas',
+  },
+};
+const MODO = MODALIDADES[document.body?.dataset.modalidad] ?? MODALIDADES.silla;
+const ES_SILLA = MODO === MODALIDADES.silla;
+/** Categorías de veteranos de la gestión ("Cat35") → "+35". */
+const textoCategoria = (c) => {
+  const m = /^cat\s*(\d{2})$/i.exec(limpio(c));
+  return m ? `+${m[1]}` : limpio(c);
+};
+
 const fmtNum = new Intl.NumberFormat('es-ES');
 const fmtPuntos = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 });
 const fmtEuros = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', minimumFractionDigits: 0, maximumFractionDigits: 2 });
@@ -57,7 +80,7 @@ function leerId() {
   return ID.test(id) ? id : null;
 }
 
-const urlWebActual = (id) => new URL(id ? `Camp_Silla.asp?IdTorneo=${id}` : 'Campeonatos', LEGACY_BASE).href;
+const urlWebActual = (id) => new URL(id ? `${MODO.paginaWeb}?IdTorneo=${id}`: 'Campeonatos', LEGACY_BASE).href;
 
 /** URL http(s) válida (relativas → web actual). */
 function urlHttp(valor) {
@@ -299,7 +322,7 @@ function pintarCabecera(d) {
   document.title = `${titulo} · ${SITIO}`;
 
   const categoria = CATEGORIAS[d.categoria];
-  $('#cps-eyebrow').textContent = ['Pádel en silla de ruedas', d.seleccion ? 'Selecciones autonómicas' : null, categoria].filter(Boolean).join(' · ');
+  $('#cps-eyebrow').textContent = [MODO.eyebrow, d.seleccion ? 'Selecciones autonómicas' : null, categoria].filter(Boolean).join(' · ');
 
   const sedes = lista(d.sedes).map((s) => limpio(s?.nombre)).filter(Boolean);
   const cuando = rangoFechas(aFecha(d.fechaInicio), aFecha(d.fechaFin));
@@ -309,7 +332,7 @@ function pintarCabecera(d) {
 
   const etiquetas = [
     { texto: 'Parejas', clase: 'org-tag' },
-    { texto: 'Silla de ruedas', clase: 'org-tag' },
+    MODO.etiqueta ? { texto: MODO.etiqueta, clase: 'org-tag' } : null,
     categoria ? { texto: categoria, clase: `org-tag cpe-tag--${d.categoria}` } : null,
     d.seleccion ? { texto: 'Selecciones autonómicas', clase: 'org-tag' } : null,
   ].filter(Boolean);
@@ -374,7 +397,7 @@ function pintarCuadros(d) {
     const idTitulo = `cuadros-${g.genero}-${n + 1}`;
     return el('section', { class: 'cpe-draws-group', 'aria-labelledby': idTitulo },
       el('h3', { class: 'cpe-draws-group__title', id: idTitulo },
-        GENEROS[g.genero], conCategoria ? el('span', { class: 'org-tag', text: categoria }) : null,
+        GENEROS[g.genero], conCategoria ? el('span', { class: 'org-tag', text: textoCategoria(categoria) }) : null,
         el('span', { class: 'org-count', text: fmtNum.format(enlaces.length) })),
       el('ul', { class: 'cpe-draws' }, enlaces.map((c) => el('li', {},
         el('a', { class: 'cpe-draw', href: c.href },
@@ -509,6 +532,18 @@ function enlaceWeb(href, texto) {
 /** Pasos del formulario de la web actual (texto "Cómo realizar la inscripción" del ASP, reescrito). */
 function pasosInscripcion(individual) {
   const quien = individual ? 'la jugadora o el jugador' : 'cada jugador o jugadora de la pareja';
+  if (!ES_SILLA) {
+    return [
+      ['Número de licencia FEP',
+        [`Introduce la licencia en vigor de ${quien}: el formulario completa el nombre y los apellidos. `,
+          'Si no aparecen, la licencia no consta como renovada: ponte en contacto con tu federación autonómica. ',
+          enlaceWeb('https://www.padelfederacion.es/Licencias_Buscar', 'Buscar mi número de licencia'), '.']],
+      ['Datos para verificar la inscripción',
+        ['Fecha de nacimiento (comprueba la categoría), y un móvil y un correo electrónico de contacto.']],
+      ['Entrenador o entrenadora (opcional)',
+        ['Número de licencia de técnico, renovada para esta temporada.']],
+    ];
+  }
   return [
     ['Número de licencia de pádel en silla de ruedas',
       [`Introduce la licencia de silla de ruedas FEP de ${quien} (empieza por ${PREFIJO_LICENCIA}): el formulario completa el nombre y los apellidos. `,
@@ -591,7 +626,7 @@ function pintarInformacion(d) {
         mapa ? [' · ', el('a', { href: mapa, target: '_blank', rel: 'noopener' }, 'Ver en el mapa', nuevaPestana())] : null);
     })),
     dato('Categorías', generos.map((g) => {
-      const cats = lista(g.categorias).map(limpio).filter(Boolean);
+      const cats = lista(g.categorias).map(textoCategoria).filter(Boolean);
       return el('span', { class: 'fedf-contact__line', text: `${GENEROS_CATEGORIA[g.genero]}${cats.length ? `: ${cats.join(', ')}` : ''}` });
     })),
     dato('Cuota de inscripción', cuotas.length ? cuotas.map((c) => fmtEuros.format(c)).join(' / ') : null),
@@ -713,10 +748,10 @@ async function init() {
 
   let d;
   try {
-    d = await get(`/api/v1/competicion/campeonatos-silla/${id}`);
+    d = await get(`/api/v1/competicion/${MODO.api}/${id}`);
     if (!d || String(d.id) !== id || !limpio(d.titulo)) throw new Error('Respuesta de otro torneo o vacía');
   } catch (e) {
-    console.warn('[FEP] torneo de silla de ruedas:', e.message);
+    console.warn(`[FEP] ${MODO.log}:`, e.message);
     mostrarError('No se ha podido cargar este torneo o no está publicado.', id);
     return;
   }
@@ -728,7 +763,7 @@ async function init() {
       pintar(d);
     } catch (e) {
       // Un bloque con datos inesperados no impide ver el resto de la ficha.
-      console.warn(`[FEP] torneo de silla de ruedas (${pintar.name}):`, e.message);
+      console.warn(`[FEP] ${MODO.log} (${pintar.name}):`, e.message);
     }
   }
   pintarPie(d, id);

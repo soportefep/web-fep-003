@@ -58,10 +58,13 @@ const PAGINAS_MIGRADAS = {
   'campeonatos': 'campeonatos.html',              // web.config: ^Campeonatos → Campeonatos.asp (formulario POST: ano, modalidad, tipo)
   'programa_impulso': 'programa-impulso.html',    // web.config: ^Programa_Impulso → Impulso.asp (formulario POST: ano)
   'impulso': 'programa-impulso.html',
-  // 'camp_equipos' NO se redirige: la ficha de cada torneo por equipos (cuadros, equipos, notificaciones…) se
-  // consulta en Camp_Equipos.asp?IdTorneo= de la web actual. campeonato-equipos.html sigue existiendo, pero no
-  // se enlaza hasta que su endpoint (/api/v1/competicion/campeonatos-equipos/{id}) esté publicado.
+  // Fichas de torneo: sin mock ni API, cada página muestra un aviso con enlace a la misma ficha en la web actual.
+  'camp_equipos': 'campeonato-equipos.html',      // Camp_Equipos.asp?IdTorneo=28676 → campeonato-equipos.html?id=28676
   'camp_silla': 'campeonato-silla.html',          // Camp_Silla.asp?IdTorneo=30180 → campeonato-silla.html?id=30180 (banners, eventos)
+  // Camp_Parejas.asp redirigía según el torneo: silla → Camp_Silla.asp (campeonatos.js lo resuelve antes),
+  // veteranos → Camp_Parejas_Veteranos.asp; el resto lo pintaba él. Las dos van a la misma ficha nueva.
+  'camp_parejas': 'campeonato-parejas.html',      // Camp_Parejas.asp?IdTorneo=28714 → campeonato-parejas.html?id=28714
+  'camp_parejas_veteranos': 'campeonato-parejas.html',
   // Cuadros: Previo.asp / PrevioEquipos.asp y las páginas a las que redirigían (Cuadro32.asp, CuadroEquipos16.asp,
   // CuadroPrevia16-4.asp, Liguilla4.asp, EquiposEnfrentamientos.asp…; ver RUTA_CUADRO) → cuadro.html
   'previo': 'cuadro.html',
@@ -144,6 +147,10 @@ const QUERY_MIGRADA = {
     parametros: { idtorneo: 'id', id: 'id' },
     valida: (q) => ID_POSITIVO.test(q.get('id') ?? ''),
   },
+  // Fichas de torneos por equipos y por parejas: ídem.
+  'camp_equipos': { parametros: { idtorneo: 'id', id: 'id' }, valida: (q) => ID_POSITIVO.test(q.get('id') ?? '') },
+  'camp_parejas': { parametros: { idtorneo: 'id', id: 'id' }, valida: (q) => ID_POSITIVO.test(q.get('id') ?? '') },
+  'camp_parejas_veteranos': { parametros: { idtorneo: 'id', id: 'id' }, valida: (q) => ID_POSITIVO.test(q.get('id') ?? '') },
   // Estadísticas de jugador/a: Estadisticas?id={licencia} (rankings, BD) → estadisticas.html?licencia=. Sin licencia,
   // la página muestra el buscador; una licencia que no es un número se queda en la web actual.
   'estadisticas': {

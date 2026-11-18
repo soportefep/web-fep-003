@@ -12,9 +12,9 @@
  *
  * Los filtros se vuelven a aplicar en el navegador sobre la respuesta: con la API no cambian nada (ya
  * vienen filtrados) y en modo prototipo el mock (todas las temporadas sin filtrar) se comporta como la API.
- * La ficha de cada torneo por equipos se abre en Camp_Equipos.asp?IdTorneo= de la web actual (es donde está su
- * información). La de los de silla de ruedas por parejas está migrada (Camp_Silla.asp → campeonato-silla.html);
- * las demás (Camp_Parejas.asp…, circuito de menores o enlace a los cuadros) siguen fuera.
+ * Fichas migradas: equipos (Camp_Equipos.asp → campeonato-equipos.html), parejas y veteranos (Camp_Parejas.asp /
+ * Camp_Parejas_Veteranos.asp → campeonato-parejas.html) y silla de ruedas (Camp_Silla.asp → campeonato-silla.html).
+ * Siguen fuera Camp_Clasificatorio.asp y las webs externas (circuito de menores…).
  * Todo texto de la API va por textContent.
  */
 (function () {
