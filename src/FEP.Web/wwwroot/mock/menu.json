@@ -32,8 +32,7 @@
   {
     "id": 4, "texto": "Licencias", "enlace": "#", "ventana": "", "icono": "fa fa-user", "orden": 4,
     "hijos": [
-      { "id": 41, "texto": "Tu licencia / Modificación", "enlace": "Consulta_Tu_Licencia", "ventana": "_parent", "icono": null, "orden": 1, "hijos": [] },
-      { "id": 42, "texto": "Buscar Licencia", "enlace": "Licencias_Buscar", "ventana": "_parent", "icono": null, "orden": 2, "hijos": [] },
+      { "id": 42, "texto": "Buscar / consulta tu licencia", "enlace": "Licencias_Buscar", "ventana": "_parent", "icono": null, "orden": 1, "hijos": [] },
       { "id": 43, "texto": "Registro Nacional Árbitros", "enlace": "Registro_Nacional_Arbitros", "ventana": "_parent", "icono": null, "orden": 3, "hijos": [] },
       { "id": 44, "texto": "Registro Nacional Técnicos", "enlace": "Registro_Nacional_Tecnicos", "ventana": "_parent", "icono": null, "orden": 4, "hijos": [] }
     ]

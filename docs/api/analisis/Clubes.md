@@ -101,7 +101,11 @@ Hay `IdClub` con ceros a la izquierda (`0104015`), por eso la API devuelve `id` 
 - **SUPUESTO**: la intercalación de `SFEP_Clubes.Club` distingue acentos (ver problema 6).
 - Canarias y Ceuta solo tienen 1 club y Melilla ninguno: ¿gestionan sus clubes fuera de este sistema? Si es
   así, convendría un aviso en la página.
-- La ficha del club (`Club.asp`) sigue en la web actual; la de la federación (`Datos_Federacion.asp`) ya está
+- La ficha del club (`Club.asp`) ya tiene endpoint: `GET /api/v1/clubes/{id}` (`ClubDetalleDto`), que usa la app móvil; la web
+  sigue enlazando a `Club.asp` hasta que se haga su página.
+  **DECISIÓN FEP (RGPD)**: la ficha publica, como la web actual, nombre completo, número de licencia, género y
+  categoría de cada jugador/a del club. ¿Se mantiene esa publicación o se reduce (p. ej. solo el número de licencias)?
+- La ficha de la federación (`Datos_Federacion.asp`) ya está
   migrada a `federacion.html?id=` (enlaza a este buscador filtrado por su federación).
 
 ## Ficheros

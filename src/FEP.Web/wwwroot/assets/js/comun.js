@@ -58,10 +58,13 @@ const PAGINAS_MIGRADAS = {
   'campeonatos': 'campeonatos.html',              // web.config: ^Campeonatos → Campeonatos.asp (formulario POST: ano, modalidad, tipo)
   'programa_impulso': 'programa-impulso.html',    // web.config: ^Programa_Impulso → Impulso.asp (formulario POST: ano)
   'impulso': 'programa-impulso.html',
-  // 'camp_equipos' NO se redirige: la ficha de cada torneo por equipos (cuadros, equipos, notificaciones…) se
-  // consulta en Camp_Equipos.asp?IdTorneo= de la web actual. campeonato-equipos.html sigue existiendo, pero no
-  // se enlaza hasta que su endpoint (/api/v1/competicion/campeonatos-equipos/{id}) esté publicado.
+  // Fichas de torneo: sin mock ni API, cada página muestra un aviso con enlace a la misma ficha en la web actual.
+  'camp_equipos': 'campeonato-equipos.html',      // Camp_Equipos.asp?IdTorneo=28676 → campeonato-equipos.html?id=28676
   'camp_silla': 'campeonato-silla.html',          // Camp_Silla.asp?IdTorneo=30180 → campeonato-silla.html?id=30180 (banners, eventos)
+  // Camp_Parejas.asp redirigía según el torneo: silla → Camp_Silla.asp (campeonatos.js lo resuelve antes),
+  // veteranos → Camp_Parejas_Veteranos.asp; el resto lo pintaba él. Las dos van a la misma ficha nueva.
+  'camp_parejas': 'campeonato-parejas.html',      // Camp_Parejas.asp?IdTorneo=28714 → campeonato-parejas.html?id=28714
+  'camp_parejas_veteranos': 'campeonato-parejas.html',
   // Cuadros: Previo.asp / PrevioEquipos.asp y las páginas a las que redirigían (Cuadro32.asp, CuadroEquipos16.asp,
   // CuadroPrevia16-4.asp, Liguilla4.asp, EquiposEnfrentamientos.asp…; ver RUTA_CUADRO) → cuadro.html
   'previo': 'cuadro.html',
@@ -80,6 +83,10 @@ const PAGINAS_MIGRADAS = {
   'ranking_silla_ruedas': 'ranking-silla-ruedas.html', // Ranking_Silla_Ruedas(.asp) (enlace de SFEP_Rankings_Web); la página no recibía parámetros
   'ranking_veteranos': 'ranking-veteranos.html',  // Ranking_Veteranos(.asp) (enlace de SFEP_Rankings_Web); la página no recibía parámetros
   'estadisticas': 'estadisticas.html',            // web.config: ^Estadisticas → Estadisticas.asp (?id={licencia} → ?licencia=; el DNI no se traslada)
+  // Buscar licencia y Consulta tu licencia van juntas en buscar-licencia.html (cada una en su sección del índice).
+  'licencias_buscar': 'buscar-licencia.html',     // /Licencias_Buscar(.asp) (menú Licencias); formulario POST, sin query que trasladar
+  'consulta_tu_licencia': 'buscar-licencia.html#consulta', // web.config: ^Consulta_Tu_Licencia → Licencias_TuLicencia.asp (acceso con clave: sigue en la web actual)
+  'licencias_tulicencia': 'buscar-licencia.html#consulta',
 };
 
 /** URL limpia de la ficha de federación (web.config: ^Federacion/([0-9]+)/([_0-9a-z-]+) → Datos_Federacion.asp). */
@@ -144,6 +151,10 @@ const QUERY_MIGRADA = {
     parametros: { idtorneo: 'id', id: 'id' },
     valida: (q) => ID_POSITIVO.test(q.get('id') ?? ''),
   },
+  // Fichas de torneos por equipos y por parejas: ídem.
+  'camp_equipos': { parametros: { idtorneo: 'id', id: 'id' }, valida: (q) => ID_POSITIVO.test(q.get('id') ?? '') },
+  'camp_parejas': { parametros: { idtorneo: 'id', id: 'id' }, valida: (q) => ID_POSITIVO.test(q.get('id') ?? '') },
+  'camp_parejas_veteranos': { parametros: { idtorneo: 'id', id: 'id' }, valida: (q) => ID_POSITIVO.test(q.get('id') ?? '') },
   // Estadísticas de jugador/a: Estadisticas?id={licencia} (rankings, BD) → estadisticas.html?licencia=. Sin licencia,
   // la página muestra el buscador; una licencia que no es un número se queda en la web actual.
   'estadisticas': {
@@ -359,11 +370,13 @@ const MENU_FEP = [
   },
   {
     clave: 'licencias', texto: 'Licencias', enlace: 'Licencias_Buscar',
-    // "Tu licencia / Modificación" y "Solicitar certificados" no están aquí: van dentro de "Mi Portal"
-    // (ACCESOS_PERFIL), donde cada persona federada (jugador/a, árbitro, técnico/a…) entra a su perfil.
+    // "Tu licencia / Modificación" se consulta desde la página de buscar licencia (sección #consulta, que de momento
+    // enlaza al acceso con clave de la web actual) hasta que exista "Mi Portal" (ACCESOS_PERFIL); "Solicitar
+    // certificados" irá dentro de Mi Portal, donde cada persona federada (jugador/a, árbitro, técnico/a…) entra a su perfil.
     grupos: [
       { enlaces: [
-        ['Buscar licencia', 'Licencias_Buscar'],
+        // "Buscar licencia" y "Tu licencia / Modificación" (Consulta_Tu_Licencia) unidas en una sola página (DECISIÓN FEP: texto).
+        ['Buscar / consulta tu licencia', 'Licencias_Buscar'],
         ['Portal de atención al federado', 'Portal-del-Federado'],
         ['Registro Nacional de Árbitros', 'Registro_Nacional_Arbitros'],
         ['Registro Nacional de Técnicos', 'Registro_Nacional_Tecnicos'],

@@ -45,7 +45,9 @@ public sealed record GrupoOrganoDto(
 /// <param name="Detalle">Dato complementario (área, categoría, tipo, estamento).</param>
 /// <param name="Email">Correo de contacto público.</param>
 /// <param name="Web">Web de contacto (federaciones y clubes).</param>
-public sealed record MiembroOrganoDto(string Nombre, string? Cargo, string? Detalle, string? Email, string? Web);
+/// <param name="Depende">Cargo del que depende en el organigrama (p. ej. los vocales de la Junta
+/// cuelgan de "Vicepresidente 1/2/3"). Debe coincidir con el <c>Cargo</c> de otro miembro del órgano.</param>
+public sealed record MiembroOrganoDto(string Nombre, string? Cargo, string? Detalle, string? Email, string? Web, string? Depende = null);
 
 /// <summary>Acta publicada.</summary>
 /// <param name="Titulo">Título del documento.</param>

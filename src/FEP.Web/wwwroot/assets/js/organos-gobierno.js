@@ -6,8 +6,8 @@
  *               (respaldo: mock/federacion-organos-gobierno.json y mocks.js)
  *
  * Cada órgano se pinta como una sección con ancla (#junta-directiva, #asamblea,
- * #comision-delegada, #ctap). Los grupos con presentación "tarjetas" se muestran como fichas de
- * persona; los de presentación "lista", como tablas. Todo texto de la API va por textContent.
+ * #comision-delegada, #ctap). Los grupos con presentación "tarjetas" forman un organigrama en
+ * HTML (los vocales cuelgan de la rama indicada en "depende"); los de presentación "lista", tablas. Todo texto de la API va por textContent.
  */
 (function () {
 'use strict';
@@ -76,21 +76,6 @@ const totalMiembros = (o) => o.grupos.reduce((s, g) => s + (g.miembros?.length ?
 /* ---------------------------------------------------------------------------
    Grupos
    --------------------------------------------------------------------------- */
-/** Fichas de persona (Junta Directiva, CTAP). */
-function grupoTarjetas(g, idOrgano) {
-  const id = `${idOrgano}-${g.clave}`;
-  return el('section', { class: 'org-group', 'aria-labelledby': id },
-    el('h3', { class: 'org-group__title', id }, g.titulo,
-      el('span', { class: 'org-count', text: String(g.miembros.length) })),
-    el('ul', { class: 'person-grid' }, g.miembros.map((m) => el('li', { class: 'person-card' },
-      el('span', { class: 'person-card__avatar', 'aria-hidden': 'true', text: iniciales(m.nombre) }),
-      el('div', { class: 'person-card__body' },
-        m.cargo ? el('p', { class: 'person-card__role', text: m.cargo }) : null,
-        el('p', { class: 'person-card__name', text: m.nombre }),
-        m.detalle ? el('p', { class: 'person-card__detail', text: m.detalle }) : null,
-        contacto(m))))));
-}
-
 /** Tabla (Asamblea, Comisión Delegada). La 2.ª columna solo aparece si algún miembro la usa. */
 function grupoLista(g) {
   const conContacto = g.miembros.some((m) => m.email || m.web);
@@ -107,6 +92,77 @@ function grupoLista(g) {
         segunda ? el('td', { class: 'org-table__detail' },
           conDetalle && m.detalle ? el('span', { class: 'org-tag', text: m.detalle }) : null,
           conContacto ? (contacto(m) ?? (conDetalle ? null : el('span', { class: 'org-muted', text: '—' }))) : null) : null)))));
+}
+
+/* ---------------------------------------------------------------------------
+   Organigrama (sustituye a las imágenes JPG/PNG de la web antigua)
+   ---------------------------------------------------------------------------
+   Se construye con los grupos de presentación "tarjetas":
+     · cabeza  → primer miembro del primer grupo (Presidente/a)
+     · ramas   → resto de ese grupo (vicepresidencias, secretaría general…)
+     · hojas   → miembros cuyo "depende" coincide con el cargo de una rama
+     · filas   → miembros sin rama: cuelgan directamente de la cabeza, agrupados por grupo
+   --------------------------------------------------------------------------- */
+/** Contacto corto para las columnas estrechas del organigrama: "✉ Email" (la dirección va en title y aria-label). */
+function contactoCorto(m) {
+  if (!(m.email && EMAIL.test(m.email))) return contacto(m);
+  return el('a', { class: 'org-contact', href: `mailto:${m.email}`, title: m.email, 'aria-label': `Escribir a ${m.cargo || m.nombre}: ${m.email}` },
+    el('span', { class: 'org-contact__icon', 'aria-hidden': 'true', text: '✉' }), 'Email');
+}
+
+function nodo(m, tipo) {
+  return el('div', { class: `ochart-node ochart-node--${tipo}` },
+    tipo === 'cabeza' ? el('span', { class: 'ochart-node__avatar', 'aria-hidden': 'true', text: iniciales(m.nombre) }) : null,
+    el('div', { class: 'ochart-node__body' },
+      m.cargo ? el('p', { class: 'ochart-node__role', text: m.cargo }) : null,
+      el('p', { class: 'ochart-node__name', text: m.nombre }),
+      m.detalle ? el('p', { class: 'ochart-node__detail', text: m.detalle }) : null,
+      tipo === 'cabeza' ? contacto(m) : contactoCorto(m)));
+}
+
+function hojas(miembros) {
+  return el('ul', { class: 'ochart-leaves' }, miembros.map((m) => el('li', {}, nodo(m, 'hoja'))));
+}
+
+function organigrama(o, grupos) {
+  const [primero, ...otrosGrupos] = grupos;
+  const [cabeza, ...ramas] = primero.miembros;
+  const porCargo = new Map(ramas.filter((r) => r.cargo).map((r) => [r.cargo, []]));
+  const filas = [];
+  for (const g of otrosGrupos) {
+    const sueltos = [];
+    for (const m of g.miembros) (porCargo.get(m.depende) ?? sueltos).push(m);
+    if (sueltos.length) filas.push({ titulo: g.titulo, miembros: sueltos });
+  }
+
+  const idTitulo = `${o.clave}-organigrama`;
+  return el('section', { class: 'ochart-wrap', 'aria-labelledby': idTitulo },
+    el('h3', { class: 'org-group__title', id: idTitulo }, 'Organigrama',
+      el('span', { class: 'org-count', text: String(totalMiembros(o)) })),
+    el('div', { class: 'ochart' },
+      el('div', { class: 'ochart__head' }, nodo(cabeza, 'cabeza')),
+      ramas.length ? el('ul', { class: 'ochart__branches', style: `--ramas:${ramas.length}` },
+        ramas.map((r) => {
+          const hijos = porCargo.get(r.cargo) ?? [];
+          return el('li', { class: 'ochart__branch' },
+            nodo(r, 'rama'),
+            hijos.length ? hojas(hijos) : null);
+        })) : null,
+      filas.map((f) => el('div', { class: 'ochart__row' },
+        el('p', { class: 'ochart__row-title' }, f.titulo,
+          el('span', { class: 'org-count', text: String(f.miembros.length) })),
+        el('ul', { class: 'ochart-leaves ochart-leaves--fila', style: `--ramas:${Math.min(f.miembros.length, 4)}` },
+          f.miembros.map((m) => el('li', {}, nodo(m, 'hoja'))))))));
+}
+
+/** Enlace discreto a la imagen oficial publicada por la FEP (si existe). */
+function enlaceImagen(o) {
+  const imagen = urlImagen(o.imagenUrl);
+  if (!imagen) return null;
+  return el('p', { class: 'ochart-source' },
+    el('a', { href: imagen, target: '_blank', rel: 'noopener' },
+      'Ver el organigrama oficial en imagen', el('span', { 'aria-hidden': 'true', text: ' ↗' }),
+      el('span', { class: 'sr-only', text: ' (se abre en una pestaña nueva)' })));
 }
 
 /* ---------------------------------------------------------------------------
@@ -146,7 +202,6 @@ function bloqueActas(o) {
    --------------------------------------------------------------------------- */
 function seccionOrgano(o, i) {
   const idTitulo = `${o.clave}-titulo`;
-  const imagen = urlImagen(o.imagenUrl);
   const tarjetas = o.grupos.filter((g) => g.presentacion === 'tarjetas' && g.miembros?.length);
   const listas = o.grupos.filter((g) => g.presentacion !== 'tarjetas' && g.miembros?.length);
 
@@ -160,15 +215,9 @@ function seccionOrgano(o, i) {
           plural(totalMiembros(o), 'miembro', 'miembros'),
           o.actas?.length ? plural(o.actas.length, 'acta', 'actas') : null,
         ].filter(Boolean).join(' · ') }))),
-    // Organigrama publicado por la FEP: siempre visible, debajo del título del órgano.
-    imagen ? el('figure', { class: 'org-figure' },
-      el('a', { class: 'org-figure__link', href: imagen, target: '_blank', rel: 'noopener' },
-        el('img', { src: imagen, alt: o.imagenAlt || `Organigrama: ${o.titulo}`, loading: 'lazy', decoding: 'async', width: 1920, height: 1080 }),
-        el('span', { class: 'sr-only', text: ' (abrir la imagen a tamaño completo en una pestaña nueva)' })),
-      el('figcaption', {},
-        el('span', { text: o.imagenAlt || `Organigrama: ${o.titulo}` }),
-        el('a', { href: imagen, target: '_blank', rel: 'noopener', 'aria-hidden': 'true', tabindex: '-1' }, 'Ver a tamaño completo ↗'))) : null,
-    tarjetas.map((g) => grupoTarjetas(g, o.clave)),
+    // Organigrama en HTML (antes, una captura JPG/PNG): jerarquía cabeza → ramas → vocales.
+    tarjetas.length ? organigrama(o, tarjetas) : null,
+    tarjetas.length ? enlaceImagen(o) : null,
     listas.length ? el('div', { class: 'org-groups' }, listas.map(grupoLista)) : null,
     bloqueActas(o));
 }

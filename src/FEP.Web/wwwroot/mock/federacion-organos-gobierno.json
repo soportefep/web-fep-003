@@ -64,91 +64,104 @@
                                                                 "cargo":  "Vocal Área Económica",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 1"
                                                             },
                                                             {
                                                                 "nombre":  "Tania Santos Alves",
                                                                 "cargo":  "Vocal de Eventos",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 1"
                                                             },
                                                             {
                                                                 "nombre":  "Lucia Iborra Broseta",
                                                                 "cargo":  "Vocal de Innovación y Proyectos",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 1"
                                                             },
                                                             {
                                                                 "nombre":  "Francisca Rojas Ponce",
                                                                 "cargo":  "Vocal Mujer",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 2"
                                                             },
                                                             {
                                                                 "nombre":  "Carmen de la Cruz Grao",
                                                                 "cargo":  "Vocal de Competición",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 2"
                                                             },
                                                             {
                                                                 "nombre":  "Diego Muñoz Marín",
                                                                 "cargo":  "Vocal de Formación e Investigación",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 2"
                                                             },
                                                             {
                                                                 "nombre":  "Paula García Rguez.",
                                                                 "cargo":  "Vocal de Base y Promoción",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 2"
                                                             },
                                                             {
                                                                 "nombre":  "Victoria Barcina Hidalgo",
                                                                 "cargo":  "Vocal CTAP",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 2"
                                                             },
                                                             {
                                                                 "nombre":  "Silvia Rial Fuertes",
                                                                 "cargo":  "Vocal de Responsabilidad Social Corporativa (RSC)",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 3"
                                                             },
                                                             {
                                                                 "nombre":  "Marta Porras Cuesta",
                                                                 "cargo":  "Vocal de Gobernanza Interna y RRHH",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 3"
                                                             },
                                                             {
                                                                 "nombre":  "Antonio José López Castro",
                                                                 "cargo":  "Vocal Pádel Inclusivo",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 3"
                                                             },
                                                             {
                                                                 "nombre":  "Lucia Carreño Busta",
                                                                 "cargo":  "Vocal de Dinamización Territorial",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 3"
                                                             },
                                                             {
                                                                 "nombre":  "Patricia Pina Somoano",
                                                                 "cargo":  "Vocal de Alianzas Estratégicas",
                                                                 "detalle":  null,
                                                                 "email":  null,
-                                                                "web":  null
+                                                                "web":  null,
+                                                                "depende":  "Vicepresidente 3"
                                                             }
                                                         ]
                                        }

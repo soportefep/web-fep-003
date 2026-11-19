@@ -29,16 +29,22 @@ Las dos imágenes de `X:\TICS\WEB\refs\images\` son idénticas (mismo tamaño en
 - Los datos de las imágenes son ahora **texto**: accesibles para lectores de pantalla, indexables y
   editables sin rehacer la imagen. Las imágenes tienen `alt` (el original no lo tenía).
 - Se elimina la consulta de noticias no usada.
-- Índice lateral con contador de personas por área, fichas de persona como en Órganos de gobierno y
+- Índice lateral con contador de personas por área, organigrama como en Órganos de gobierno y
   nota con enlace a Órganos de gobierno (la Asamblea General y la Comisión Delegada aparecen en el
   organigrama pero se detallan allí).
-- **Junta Directiva**: el organigrama la muestra como un recuadro sin nombres. En la página se listan sus
-  18 miembros (presidente, 3 vicepresidencias, secretaría general y 13 vocales). No se copian: el grupo
+- **Junta Directiva**: el organigrama la muestra como un recuadro sin nombres. La API devuelve sus
+  18 miembros (la página usa Presidente y Secretaría General y enlaza al resto). No se copian: el grupo
   `junta-directiva` del JSON va vacío y lo rellena `EquipoFepRepository` (y el mock,
   `generar-mock-equipo-fep.ps1`) con la Junta de `Contenidos/organos-gobierno.json`. Una sola fuente:
   si cambia la Junta, se edita solo `organos-gobierno.json` y se regeneran los dos mocks. Así el área
   "Organigrama" pasa de 9 a 25 personas (Junta 18 + área deportiva 2 + equipo administrativo 5).
-- Móvil sin scroll horizontal (la imagen se adapta al ancho y se puede abrir a tamaño completo).
+- **Organigramas en HTML/CSS** en lugar de las imágenes PNG rojas y naranjas (estilos `.ochart*`, los mismos
+  que Órganos de gobierno). General: Asamblea General (+ Comisión Delegada, enlazadas a su página) →
+  Presidente → Dirección Deportiva Federativa (seleccionador absolutos y enlace a la selección de menores)
+  | Junta Directiva (recuadro con nº de miembros y enlace a su composición) | Secretaría General (equipo
+  administrativo). Menores: Selecciones de menores → seleccionadores → equipo técnico. Presidente y
+  Secretaría General salen de la Junta por su cargo; la imagen oficial sigue enlazada.
+- Móvil sin scroll horizontal: el organigrama pasa a árbol vertical (container query).
 
 ## Correcciones de datos (revisar)
 
