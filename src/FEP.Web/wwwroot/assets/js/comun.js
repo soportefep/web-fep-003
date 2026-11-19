@@ -83,6 +83,10 @@ const PAGINAS_MIGRADAS = {
   'ranking_silla_ruedas': 'ranking-silla-ruedas.html', // Ranking_Silla_Ruedas(.asp) (enlace de SFEP_Rankings_Web); la página no recibía parámetros
   'ranking_veteranos': 'ranking-veteranos.html',  // Ranking_Veteranos(.asp) (enlace de SFEP_Rankings_Web); la página no recibía parámetros
   'estadisticas': 'estadisticas.html',            // web.config: ^Estadisticas → Estadisticas.asp (?id={licencia} → ?licencia=; el DNI no se traslada)
+  // Buscar licencia y Consulta tu licencia van juntas en buscar-licencia.html (cada una en su sección del índice).
+  'licencias_buscar': 'buscar-licencia.html',     // /Licencias_Buscar(.asp) (menú Licencias); formulario POST, sin query que trasladar
+  'consulta_tu_licencia': 'buscar-licencia.html#consulta', // web.config: ^Consulta_Tu_Licencia → Licencias_TuLicencia.asp (acceso con clave: sigue en la web actual)
+  'licencias_tulicencia': 'buscar-licencia.html#consulta',
 };
 
 /** URL limpia de la ficha de federación (web.config: ^Federacion/([0-9]+)/([_0-9a-z-]+) → Datos_Federacion.asp). */
@@ -366,11 +370,13 @@ const MENU_FEP = [
   },
   {
     clave: 'licencias', texto: 'Licencias', enlace: 'Licencias_Buscar',
-    // "Tu licencia / Modificación" y "Solicitar certificados" no están aquí: van dentro de "Mi Portal"
-    // (ACCESOS_PERFIL), donde cada persona federada (jugador/a, árbitro, técnico/a…) entra a su perfil.
+    // "Tu licencia / Modificación" se consulta desde la página de buscar licencia (sección #consulta, que de momento
+    // enlaza al acceso con clave de la web actual) hasta que exista "Mi Portal" (ACCESOS_PERFIL); "Solicitar
+    // certificados" irá dentro de Mi Portal, donde cada persona federada (jugador/a, árbitro, técnico/a…) entra a su perfil.
     grupos: [
       { enlaces: [
-        ['Buscar licencia', 'Licencias_Buscar'],
+        // "Buscar licencia" y "Tu licencia / Modificación" (Consulta_Tu_Licencia) unidas en una sola página (DECISIÓN FEP: texto).
+        ['Buscar / consulta tu licencia', 'Licencias_Buscar'],
         ['Portal de atención al federado', 'Portal-del-Federado'],
         ['Registro Nacional de Árbitros', 'Registro_Nacional_Arbitros'],
         ['Registro Nacional de Técnicos', 'Registro_Nacional_Tecnicos'],

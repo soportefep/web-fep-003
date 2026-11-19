@@ -668,14 +668,13 @@ h1, h2, h3, p { margin: 0; }
    ========================================================================= */
 .footer { background: var(--navy); color: var(--on-dark); padding-top: 56px; }
 .footer__grid { display: grid; grid-template-columns: 464px 304px 304px minmax(0, 1fr); gap: 0; }
-/* El logo tiene el texto en negro: sobre el azul del pie no se leía. Va sobre una placa blanca
-   (con la barra roja del Figma a la izquierda) para que se vea con sus colores. */
+/* Logo en negativo (texto blanco, logo_FEP_Neg.ai): va directo sobre el azul del pie,
+   con la barra roja del Figma a la izquierda. */
 .footer__logo {
-  position: relative; display: inline-flex; align-items: center; padding: 10px 18px 10px 22px;
-  background: #fff; border-radius: var(--radius); box-shadow: 0 6px 20px rgba(0, 0, 0, .25);
+  position: relative; display: inline-flex; align-items: center; padding: 4px 0 4px 22px;
   transition: transform .2s var(--ease);
 }
-.footer__logo::before { content: ""; position: absolute; left: 10px; top: 50%; width: 4px; height: 36px; transform: translateY(-50%); background: var(--red); border-radius: 2px; }
+.footer__logo::before { content: ""; position: absolute; left: 0; top: 50%; width: 4px; height: 36px; transform: translateY(-50%); background: var(--red); border-radius: 2px; }
 .footer__logo:hover { transform: translateY(-2px); }
 .footer__logo img { height: 56px; width: auto; }
 .footer__brand p { margin-top: 30px; font-size: 13px; line-height: 20px; color: var(--on-dark); }
@@ -872,7 +871,142 @@ a.doc__title:hover { color: var(--red); }
 .org-more > summary::-webkit-details-marker { display: none; }
 .org-more > summary::before { content: "+"; display: grid; place-items: center; width: 18px; height: 18px; border: 1px solid currentColor; border-radius: 50%; font-size: 13px; line-height: 1; }
 .org-more[open] > summary::before { content: "−"; }
-/* Organigrama (Junta Directiva, CTAP): imagen visible bajo el título del órgano */
+/* Organigrama en HTML (Junta Directiva, CTAP): cabeza → ramas → vocales, con conectores en CSS.
+   En anchos estrechos (contenedor < 720 px) pasa a árbol vertical. */
+.ochart-wrap { margin-top: 32px; }
+.ochart {
+  --ln: #D1D5DB; --gap: 14px; --drop: 22px;
+  container: ochart / inline-size;
+  margin-top: 16px; padding: 28px 24px; border-radius: var(--radius-lg);
+  background: var(--gray-bg); background-image: radial-gradient(rgba(17, 27, 43, .05) 1px, transparent 1px); background-size: 16px 16px;
+}
+.ochart-node {
+  position: relative; display: flex; gap: 12px; align-items: flex-start; min-width: 0;
+  background: #fff; border: 1px solid var(--line); border-radius: var(--radius);
+  transition: border-color .2s, box-shadow .2s;
+}
+.ochart-node:hover { border-color: #D7DAE0; box-shadow: 0 8px 24px rgba(17, 27, 43, .08); }
+.ochart-node__body { min-width: 0; }
+.ochart-node__avatar {
+  display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 50%;
+  background: var(--navy); color: #fff; font-size: 12px; font-weight: 700; letter-spacing: .02em;
+}
+.ochart-node__role { font-size: 10px; line-height: 14px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--red); }
+.ochart-node__name { margin-top: 2px; font-size: 14px; line-height: 19px; font-weight: 600; color: var(--text); }
+.ochart-node__detail { margin-top: 3px; font-size: 12px; line-height: 16px; color: var(--text-2); }
+.ochart-node .org-contact { margin-top: 6px; font-size: 12px; }
+
+/* Cabeza (Presidente/a) */
+.ochart__head { display: flex; flex-direction: column; align-items: center; }
+.ochart__head::after { content: ""; width: 2px; height: var(--drop); background: var(--ln); }
+.ochart-node--cabeza {
+  width: min(100%, 360px); padding: 16px 18px; border: 0; background: var(--navy);
+  box-shadow: 0 10px 28px rgba(17, 27, 43, .18);
+}
+.ochart-node--cabeza:hover { box-shadow: 0 12px 32px rgba(17, 27, 43, .24); }
+.ochart-node--cabeza .ochart-node__avatar { width: 44px; height: 44px; font-size: 14px; background: var(--red); }
+.ochart-node--cabeza .ochart-node__role { color: #FCA5A5; }
+.ochart-node--cabeza .ochart-node__name { font-size: 17px; line-height: 22px; color: #fff; }
+.ochart-node--cabeza .ochart-node__detail { color: var(--on-dark); }
+.ochart-node--cabeza .org-contact { color: #fff; opacity: .85; }
+
+/* Ramas (vicepresidencias, secretaría general…) unidas por una barra horizontal */
+.ochart__branches { display: grid; grid-template-columns: repeat(var(--ramas, 4), minmax(0, 1fr)); grid-template-rows: auto auto; gap: 0 var(--gap); }
+/* subgrid: todas las ramas miden lo mismo y sus vocales empiezan a la misma altura */
+.ochart__branch { position: relative; padding-top: var(--drop); display: grid; grid-row: span 2; grid-template-rows: subgrid; align-content: start; }
+.ochart__branch::before {
+  content: ""; position: absolute; top: 0; height: 2px; background: var(--ln);
+  left: calc(var(--gap) / -2); right: calc(var(--gap) / -2);
+}
+.ochart__branch:first-child::before { left: 50%; }
+.ochart__branch:last-child::before { right: 50%; }
+.ochart__branch::after { content: ""; position: absolute; top: 0; left: calc(50% - 1px); width: 2px; height: var(--drop); background: var(--ln); }
+.ochart-node--rama { padding: 14px; border-top: 3px solid var(--red); }
+
+/* Vocales: lista en árbol bajo su rama */
+.ochart-leaves { position: relative; margin-left: 12px; }
+.ochart-leaves > li { position: relative; padding: 8px 0 0 14px; }
+.ochart-leaves > li::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: var(--ln); }
+.ochart-leaves > li:last-child::before { bottom: auto; height: 29px; }
+.ochart-leaves > li::after { content: ""; position: absolute; left: 0; top: 28px; width: 12px; height: 2px; background: var(--ln); }
+.ochart-node--hoja { padding: 10px 12px; }
+.ochart-node--hoja .ochart-node__name { font-size: 13.5px; line-height: 18px; }
+
+/* Miembros que cuelgan directamente de la cabeza (p. ej. vocales del CTAP) */
+.ochart__row { display: flex; flex-direction: column; align-items: center; }
+.ochart__row + .ochart__row { margin-top: 24px; }
+.ochart__row-title {
+  display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px;
+  background: #fff; border: 1px solid var(--line); font-size: 11px; font-weight: 700; letter-spacing: .04em;
+  text-transform: uppercase; color: var(--text-3); position: relative; z-index: 1;
+}
+.ochart__row-title .org-count { letter-spacing: 0; }
+.ochart__row > .ochart-leaves--fila { align-self: stretch; }
+.ochart-leaves--fila {
+  display: grid; grid-template-columns: repeat(var(--ramas, 4), minmax(0, 1fr)); gap: 0 var(--gap);
+  margin: var(--drop) 0 0; position: relative;
+}
+.ochart-leaves--fila::before { content: ""; position: absolute; left: 50%; top: calc(var(--drop) * -1); width: 2px; height: var(--drop); background: var(--ln); }
+.ochart-leaves--fila > li { padding: var(--drop) 0 0; }
+.ochart-leaves--fila > li::before, .ochart-leaves--fila > li:last-child::before {
+  top: 0; bottom: auto; height: 2px; width: auto; left: calc(var(--gap) / -2); right: calc(var(--gap) / -2);
+}
+.ochart-leaves--fila > li:first-child::before { left: 50%; }
+.ochart-leaves--fila > li:last-child::before { right: 50%; }
+.ochart-leaves--fila > li::after { top: 0; left: calc(50% - 1px); width: 2px; height: var(--drop); }
+.ochart-leaves--fila .ochart-node--hoja { height: 100%; border-top: 3px solid var(--red); }
+
+.ochart-source { margin-top: 10px; font-size: 12px; text-align: right; }
+.ochart-source a { font-weight: 600; color: var(--text-2); }
+.ochart-source a:hover { color: var(--red); text-decoration: underline; }
+
+/* Equipo FEP: órganos/unidades enlazados, Asamblea + Comisión Delegada sobre la cabeza */
+.ochart-node--unidad { display: block; padding: 12px 18px; text-align: center; }
+a.ochart-node:hover .ochart-node__name { color: var(--red); }
+a.ochart-node--hoja .ochart-node__detail { font-weight: 600; color: var(--red); }
+.ochart-node--unidad.ochart-node--rama { text-align: left; }
+.ochart-node__more { display: inline-block; margin-top: 6px; font-size: 12px; font-weight: 600; color: var(--red); }
+.ochart-node--unidad.ochart-node--cabeza { width: min(100%, 320px); }
+.ochart__gov { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 240px) minmax(0, 1fr); align-items: center; gap: 0 28px; }
+.ochart__gov > :first-child { grid-column: 2; border: 2px solid var(--navy); }
+.ochart-node--lateral { justify-self: start; max-width: 220px; padding: 10px 16px; border-style: dashed; }
+.ochart-node--lateral::before { content: ""; position: absolute; top: 50%; right: 100%; width: 28px; height: 2px; background: var(--ln); }
+.ochart__gov + .ochart__head::before { content: ""; width: 2px; height: var(--drop); background: var(--ln); }
+.ochart-leaves > li.is-label::after { top: 23px; }
+.ochart-leaves > li.is-label .ochart__row-title { padding: 4px 10px; font-size: 10px; }
+.ochart__row--tras-ramas { margin-top: var(--drop); position: relative; }
+.ochart__row--tras-ramas::before { content: ""; position: absolute; left: calc(50% - 1px); bottom: 100%; width: 2px; height: var(--drop); background: var(--ln); }
+
+/* Árbol vertical cuando el organigrama no cabe a lo ancho */
+@container ochart (max-width: 719px) {
+  .ochart__head { align-items: stretch; }
+  .ochart__head::after { margin-left: 24px; }
+  .ochart-node--cabeza { width: 100%; }
+  .ochart__branches, .ochart-leaves--fila { display: block; margin: 0 0 0 24px; }
+  .ochart__branch, .ochart-leaves--fila > li { padding: 12px 0 0 18px; }
+  .ochart__branch::before, .ochart-leaves--fila > li::before,
+  .ochart__branch:first-child::before, .ochart-leaves--fila > li:first-child::before {
+    left: 0; right: auto; top: 0; bottom: 0; width: 2px; height: auto;
+  }
+  .ochart__branch:last-child::before, .ochart-leaves--fila > li:last-child::before { left: 0; right: auto; top: 0; bottom: auto; width: 2px; height: 36px; }
+  .ochart__branch::after, .ochart-leaves--fila > li::after { top: 35px; left: 0; width: 16px; height: 2px; }
+  .ochart__branch:first-child { padding-top: 0; }
+  .ochart__branch:first-child::after { top: 23px; }
+  .ochart__branch:first-child:last-child::before { height: 24px; }
+  .ochart__row { align-items: flex-start; }
+  .ochart__row-title { margin-left: 8px; }
+  .ochart-leaves--fila::before { left: 0; }
+  .ochart__gov { display: flex; flex-direction: column; align-items: stretch; gap: 8px; }
+  .ochart-node--lateral { max-width: none; }
+  .ochart-node--lateral::before { content: none; }
+  .ochart__gov + .ochart__head::before { margin-left: 24px; }
+  .ochart-node--unidad.ochart-node--cabeza { width: 100%; }
+  .ochart__row--tras-ramas::before { left: 24px; }
+}
+@media (max-width: 640px) { .ochart { padding: 20px 14px; } }
+@media (prefers-reduced-motion: reduce) { .ochart-node { transition: none; } }
+
+/* Imagen a ancho completo con pie (reutilizada por otras páginas) */
 .org-figure { margin: 28px 0 0; }
 .org-figure__link { display: block; overflow: hidden; border-radius: var(--radius); border: 1px solid var(--line); background: var(--gray-bg); }
 .org-figure img { display: block; width: 100%; height: auto; transition: transform .3s var(--ease); }
@@ -1567,6 +1701,30 @@ a.rnk-card:hover .rnk-card__go { background: var(--red); border-color: var(--red
 .est-td--sino { width: 80px; }
 .est-mas { cursor: pointer; }
 
+/* Buscar licencia (buscar-licencia.html · Licencias_Buscar.asp): buscador (reutiliza .clubs-search/.clubs-form y el
+   error de .est-form), fecha de nacimiento en tres desplegables, avisos (reutiliza .est-aviso) y tabla (.org-table) */
+.lic-search { scroll-margin-top: 120px; }
+.lic-form__req { font-weight: 500; color: var(--text-2); }
+.lic-fecha { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px 20px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.lic-fecha__legend { padding: 0; margin-bottom: 8px; font-size: 12px; font-weight: 600; letter-spacing: .02em; color: var(--text-3); }
+.lic-fecha .clubs-form__field label { font-weight: 500; }
+.lic-fecha__help { grid-column: 1 / -1; }
+.lic-form__error { margin: 0; }
+.lic-form [aria-invalid="true"] { border-color: var(--red); box-shadow: 0 0 0 1px var(--red); }
+.lic-aviso { margin-top: 16px; }
+.lic-table { font-variant-numeric: tabular-nums; }
+.lic-table th:first-child { width: 120px; }
+.lic-table__licencia { font-weight: 700; white-space: nowrap; }
+.lic-table__licencia a { color: var(--red); text-decoration: underline; }
+.lic-table__licencia a:hover { color: var(--red-dark); }
+/* Consulta tu licencia (Licencias_TuLicencia.asp): texto, acceso a la web actual y enlace a la solicitud de clave */
+.lic-consulta { scroll-margin-top: 120px; margin-top: 48px; padding-top: 40px; border-top: 1px solid var(--line); }
+.lic-consulta > p:not(.org-updated) { max-width: 720px; margin-top: 12px; font-size: 15px; line-height: 1.6; color: var(--text-3); }
+.lic-consulta > p a { font-weight: 600; color: var(--red); text-decoration: underline; }
+.lic-consulta__acciones { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-top: 20px; }
+.lic-consulta__enlace { font-size: 14px; font-weight: 600; color: var(--red); text-decoration: underline; }
+.lic-consulta .org-updated { margin-top: 16px; }
+
 /* =========================================================================
    Responsive
    ========================================================================= */
@@ -1750,6 +1908,7 @@ a.rnk-card:hover .rnk-card__go { background: var(--red); border-color: var(--red
   .rkc-lista { scroll-margin-top: 150px; }
   .orgt-estado { scroll-margin-top: 150px; }
   .est-search { scroll-margin-top: 150px; }
+  .lic-search, .lic-consulta { scroll-margin-top: 150px; }
 }
 @media (max-width: 860px) {
   .page-hero__title { font-size: 40px; }
@@ -1932,6 +2091,17 @@ a.rnk-card:hover .rnk-card__go { background: var(--red); border-color: var(--red
   .est-table--evolucion tr { flex-wrap: nowrap; justify-content: space-between; }
   .est-table--evolucion tbody th { flex: 1 1 auto; }
   .est-chart .est-chart__pos { writing-mode: vertical-rl; transform: rotate(180deg); font-size: 10px; padding-bottom: 0; }
+  /* Buscar licencia: día, mes y año siguen en una fila (son desplegables cortos); cada licencia es una ficha con el
+     número arriba y apellidos y nombre etiquetados debajo (sin scroll horizontal) */
+  .lic-search { scroll-margin-top: 135px; }
+  .lic-fecha { gap: 6px 10px; }
+  .lic-consulta { scroll-margin-top: 135px; margin-top: 36px; padding-top: 32px; }
+  .lic-consulta > p:not(.org-updated) { font-size: 14px; }
+  .lic-consulta__acciones .btn { flex: 1; }
+  .lic-table tr { flex-direction: row; flex-wrap: wrap; gap: 2px 12px; }
+  .lic-table td.lic-table__licencia { flex: 1 0 100%; font-size: 15px; }
+  .lic-table td:not(.lic-table__licencia) { font-size: 13px; }
+  .lic-table td[data-label]:not(.lic-table__licencia)::before { content: attr(data-label) ": "; color: var(--text-2); }
 }
 
 /* =========================================================================

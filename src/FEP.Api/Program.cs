@@ -4,6 +4,7 @@ using FEP.Api.Data.Repositories.Clubes;
 using FEP.Api.Data.Repositories.Competicion;
 using FEP.Api.Data.Repositories.Federacion;
 using FEP.Api.Data.Repositories.Formacion;
+using FEP.Api.Data.Repositories.Licencias;
 using FEP.Api.Data.Repositories.Micrositios;
 using FEP.Api.Data.Repositories.Multimedia;
 using FEP.Api.Data.Repositories.Navegacion;
@@ -128,6 +129,13 @@ builder.Services.AddScoped<IRankingEquiposRepository, RankingEquiposRepository>(
 // SFEP_CategoriasMenores, SFEP_Inscripciones_Equipos(_Jugadores)). El ASP escribía en SFEP_estadisticasWeb y
 // SFEP_RankingTorneos en cada visita: aquí no. Nombre de cada federación, de IFederacionesAutonomicasRepository.
 builder.Services.AddScoped<IEstadisticasJugadorRepository, EstadisticasJugadorRepository>();
+
+// Licencias_Buscar.asp (/Licencias_Buscar): buscador público "Busca tu licencia" por tipo (jugador/a, técnico/a,
+// juez-árbitro, silla de ruedas), federación, nombre y/o fecha de nacimiento (Dapper, solo lectura; SFEP_Fichas,
+// JugadorUltimoAno, SillaUltimoAno, SFEP_Licencia). Datos personales: sin caché, máximo 100 resultados y límite de
+// búsquedas por IP (LimiteBusquedaLicencias).
+builder.Services.AddScoped<ILicenciasRepository, LicenciasRepository>();
+builder.Services.AddLimiteBusquedaLicencias();
 
 // Previo.asp, PrevioEquipos.asp y las páginas de cuadro a las que redirigían (Cuadro4…128.asp, CuadroPrevia*.asp,
 // CuadroPrePrevia*.asp, CuadroEquipos*.asp, Liguilla3Equipos/Liguilla4/Liguilla4Equipos.asp) + EquiposEnfrentamientos.asp:

@@ -31,7 +31,13 @@ El ASP usa `<%if a=5 then%>` y `<%if a="" then%>` con una variable `a` que nunca
 
 - Los datos que solo estaban **dentro de imágenes** (13 vocales de la Junta y composición del CTAP) se
   han transcrito como texto: accesibles para lectores de pantalla e indexables. La imagen original
-  sigue disponible ("Ver la imagen original").
+  sigue disponible ("Ver el organigrama oficial en imagen").
+- **Organigramas en HTML/CSS** (Junta Directiva y CTAP) en lugar de las capturas JPG/PNG rojas y
+  naranjas: cabeza (Presidente/a) → ramas (vicepresidencias, secretaría general) → vocales, con
+  conectores en CSS y los estilos del resto de la web; en anchos estrechos pasa a árbol vertical
+  (container query). La jerarquía sale del campo `depende` de cada miembro (cargo del que cuelga, p. ej.
+  `"Vicepresidente 2"`), transcrito de la imagen oficial; los miembros sin `depende` cuelgan
+  directamente de la cabeza (vocales del CTAP).
 - Emails como enlaces `mailto:`, webs de federaciones/clubes como enlaces externos con `rel="noopener"`.
 - Actas ordenadas por fecha con tipo (Ordinaria/Extraordinaria) y enlace de descarga; URLs con espacios
   codificadas (`2023 Acta…pdf` → `2023%20Acta…pdf`). Comprobadas las 10: responden `200 application/pdf`.

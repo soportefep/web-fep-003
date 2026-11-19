@@ -56,6 +56,20 @@ public sealed class OrganosGobiernoTests(WebApplicationFactory<Program> factory)
     }
 
     [Fact]
+    public async Task Los_vocales_de_la_Junta_dependen_de_una_vicepresidencia_existente()
+    {
+        using var cliente = factory.CreateClient();
+
+        var datos = await cliente.GetFromJsonAsync<OrganosGobiernoDto>(Ruta);
+        var junta = datos!.Organos.Single(o => o.Clave == "junta-directiva");
+        var cargos = junta.Grupos.Single(g => g.Clave == "presidencia").Miembros.Select(m => m.Cargo).ToHashSet();
+        var vocales = junta.Grupos.Single(g => g.Clave == "vocales").Miembros;
+
+        // El organigrama de la web cuelga cada vocal de la rama cuyo cargo coincide con "depende"
+        Assert.All(vocales, v => Assert.Contains(v.Depende, cargos));
+    }
+
+    [Fact]
     public async Task Responde_con_cache_publica()
     {
         using var cliente = factory.CreateClient();
